@@ -1,15 +1,29 @@
-# london10-F-project
+# Google Oauth
 
- readme
- readme
-test
+## Description
 
-Hi This.team
- st
+Signing with google account to Class_Planner website
 
+## Getting Started
 
-saim
+These instructions will help you set up the project on your local machine.
 
-Hi This.team
+### Prerequisites
 
- staging
+- Node.js installed
+- npm (Node Package Manager) installed
+
+### Installing Dependencies
+
+Run the following commands in your terminal to install project dependencies:
+
+```bash
+# Install Google OAuth 2.0 strategy for Passport
+npm install passport-google-oauth20
+
+# Install Passport for authentication
+npm install passport
+
+# Install Express session middleware
+npm install express-session
+```
