@@ -1,9 +1,60 @@
 const express = require("express");
 const app = express();
 const { pool } = require("./dbConfig");
+const passport = require("./Oauth"); // Import the configured passport object
+const session = require("express-session");
 
 app.use(express.json());
 require("dotenv").config();
+
+
+// Set up session middleware with required options
+app.use(session({ secret: "123", resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Middleware to check if the user is logged in
+function isLoggedIn(req, res, next) {
+  req.user ? next() : res.sendStatus(401);
+}
+
+// Route to display a link for Google login
+app.get("/login", (req, res) => {
+  res.send("<a href='/auth/google'>Login with Google</a>");
+});
+
+// Route for initiating Google OAuth authentication
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Callback route after successful Google authentication
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/profile",
+    failureRedirect: "/failure",
+  })
+);
+
+// Profile route accessible only when logged in
+app.get("/profile", isLoggedIn, (req, res) => {
+  res.send(`Welcome ${req.user.displayName}`);
+});
+
+// Failure route for unsuccessful authentication
+app.get("/failure", (req, res) => {
+  res.send("Fail");
+});
+
+// Logout route to log the user out
+app.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) return;
+    res.send("Logout succeeded");
+  });
+});
 
 //GET method below just to test if the server is running, when you create an endpoint you can delete this
 app.get("/", async (req, res) => {
