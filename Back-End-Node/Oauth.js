@@ -7,10 +7,10 @@ passport.use(
   new GoogleStrategy(
     {
       // Google API credentials obtained from the Google Developer Console
-      clientID:
-        "149791645078-g4toaougdp9aini8f2bog32f9penkl2v.apps.googleusercontent.com",
-      clientSecret: "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",
-      callbackURL: "http://localhost:10000/auth/google/callback",
+
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
     function (accessToken, refreshToken, profile, cb) {
       // Callback function called after successful authentication
