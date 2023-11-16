@@ -6,7 +6,7 @@ import {yupResolver} from "@hookform/resolvers/yup"
 import {useForm} from "react-hook-form"
 import FormProvider from "../hooks-form/form-provider";
 import RHFTextField from "../hooks-form/RHFTextField";
-import { Button } from "@mui/material";
+import { Button, Divider } from "@mui/material";
 
 const LoginForm = () => {
 
@@ -56,6 +56,9 @@ const onSubmit = (data) => {
           <RHFTextField name='username' label='User Name'/>
           <RHFTextField name='password' label='Password'/>
           <Button type='submit' variant="contained">Login</Button>  
+          <Divider />
+          <Button type='submit' variant="contained">SlackLogin</Button> 
+          <Divider />
           <Button href={`/signup`} >Sign Up</Button>      
         </Stack>
 
