@@ -14,6 +14,8 @@ const pool = new Pool({
   },
 });
 
+
+
 //DB is connected, below is to see what tables are in the DB
 const query = `
   SELECT table_name
