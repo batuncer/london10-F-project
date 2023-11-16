@@ -75,6 +75,7 @@ Personal Development Rep 2
 
             <Stack spacing={2}>
                 <RHFTextField name='username' label='User Name' />
+                <RHFTextField name='email' label='Mail' />
                 <RHFTextField
                     name="password"
                     label="Password"
@@ -89,6 +90,7 @@ Personal Development Rep 2
                         ),
                     }}
                 />
+
                 <RHFTextField
                     name="password_confirmation"
                     label="Confirm Password"
