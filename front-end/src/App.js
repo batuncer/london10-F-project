@@ -5,6 +5,7 @@ import MainRoutes from "./routes";
 function App() {
   return (
     <div className="App">
+      <Header />
       <MainRoutes />
     </div>
   );
