@@ -1,23 +1,75 @@
 const express = require("express");
 const app = express();
 const { pool } = require("./dbConfig");
-
+var http = require("http");
+var fs = require("fs");
+var https = require("https");
+var fetch = require("node-fetch");
 app.use(express.json());
 require("dotenv").config();
 
-//GET method below just to test if the server is running, when you create an endpoint you can delete this
-app.get("/", async (req, res) => {
+var options = {
+  key: fs.readFileSync("client-key.pem"),
+  cert: fs.readFileSync("client-cert.pem"),
+};
+// app.use(function (req, res, next) {
+//   res.writeHead(200);
+//   res.end("hello world\n");
+//   next();
+// });
+
+const { WebClient } = require("@slack/web-api");
+const client = new WebClient();
+const client_id = "6209798254180.6230482777808";
+const client_secret = "4fdc85a575bd64126a04a533934d5aa7";
+app.get("/auth/redirect", async (req, res) => {
+  // TODO: verify state parameter
   try {
-    const result = await pool.query("SELECT * FROM public.city");
-    //I received the output '{"user":"postgres"}' without 'public' preceding 'user' because PostgreSQL defaults to a behavior where referencing a 'user' table without specifying a schema results in the default system view or object named 'user' being referenced inadvertently. To explicitly refer to the 'user' table, I utilized the table's schema name or qualified the table name with the schema where it exists.
-    res.send(result.rows);
-  } catch (error) {
-    res.status(500).send("Error inserting data");
-    console.error("Error executing query:", error);
+    const query = {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      method: "POST",
+      body: `code=${req.query.code}&client_id=${client_id}&client_secret=${client_secret}`,
+    };
+    const authResponse = await fetch(
+      "https://slack.com/api/oauth.v2.access",
+      query
+    );
+    const authJson = await authResponse.json();
+
+    console.log("authJson", authJson);
+
+    const userDataResponse = await fetch(
+      `https://slack.com/api/users.identity?user=${authJson.authed_user.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${authJson.authed_user.access_token}`,
+        },
+      }
+    );
+    const userDataJson = await userDataResponse.json();
+    /*
+        userDataJson
+        {
+            ok: true,
+            user: { name: 'my.name', id: 'xxxxx' },
+            team: { id: 'xxxxx' }
+        }
+    */
+    // You decide how save the response to the Database
+    // e.g. Model.save({ user_id: user.id, token: authJson.authed_user.access_token })
+    // You can return a JWT token to the frontend to use it in the future
+    console.log("userDataJson", userDataJson);
+
+    // Now you can assume this user logged in with his/her Slack account
+    // TODO: set-cookie etc
+    res.redirect("http://localhost:3000/oauthdone?code=1234");
+    //res.status(200).send("You've logged in with your Slack account!");
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Something wrong!");
   }
 });
-
-app.post("/oauth", async (req, res) => {
+app.post("/auth", async (req, res, next) => {
   const { code } = req.body;
   const { VITE_SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, VITE_REDIRECT_URL } =
     process.env;
@@ -61,10 +113,26 @@ app.post("/oauth", async (req, res) => {
   // You can return a JWT token to the frontend to use it in the future
   console.log(userDataJson);
   res.send({ message: "ok" });
+  next();
 });
+https.createServer(options, app).listen(443);
 
+http.createServer(app).listen(10000);
+
+//GET method below just to test if the server is running, when you create an endpoint you can delete this
+app.get("/", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM cities");
+    //I received the output '{"user":"postgres"}' without 'public' preceding 'user' because PostgreSQL defaults to a behavior where referencing a 'user' table without specifying a schema results in the default system view or object named 'user' being referenced inadvertently. To explicitly refer to the 'user' table, I utilized the table's schema name or qualified the table name with the schema where it exists.
+    res.send(result.rows);
+  } catch (error) {
+    res.status(500).send("Error inserting data");
+    console.error("Error executing query:", error);
+  }
+  next();
+});
 
 const port = process.env.PORT || 10000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
