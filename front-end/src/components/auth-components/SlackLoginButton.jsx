@@ -6,26 +6,18 @@ export default function SlackLoginButton() {
     const slackClientId = '6209798254180.6230482777808'
     slack_url = `https://slack.com/openid/connect/authorize?response_type=code&scope=openid&user_scope=identity.basic%2Copenid%2Cidentity.email&client_id=${slackClientId}&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect`
     function openPopup() {
-        const width = 400
-        const height = 600
-        const left = window.screen.width / 2 - width / 2
-        const top = window.screen.height / 2 - height / 2
+        const width = 600;
+        const height = 700;
+        const left = window.screenX + window.innerWidth / 2 - width / 2;
+        const top = window.screenY + window.innerHeight / 2 - height / 2;
 
-        let url = `https://slack.com/oauth/v2/authorize?scope=identity.basic,openid,identity.email&user_scope=identity.basic%2Copenid%2Cidentity.email&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&amp;client_id=6209798254180.6230482777808`
-
+        const url = `https://slack.com/oauth/v2/authorize?scope=identity.basic,openid,identity.email&user_scope=identity.basic%2Copenid%2Cidentity.email&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&amp;client_id=6209798254180.6230482777808`;
 
         return window.open(
             slack_url,
             '',
-            'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' +
-            width +
-            ', height=' +
-            height +
-            ', top=' +
-            top +
-            ', left=' +
-            left
-        )
+            `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
+        );
     }
     function handleClick() {
         polling(openPopup())
