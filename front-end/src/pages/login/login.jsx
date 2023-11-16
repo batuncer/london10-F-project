@@ -1,14 +1,18 @@
 // Login.jsx
 import React from 'react';
 import LoginForm from '../../components/auth-components/LoginForm';
+import { Container } from '@mui/material';
 
-const Login = () => {
+
+const LoginPage = () => {
+
+  
   return (
-    <div>
+<Container maxWidth="sm">
       <h2>Login Page</h2>
       <LoginForm />
-    </div>
+   </Container>
   );
 }
 
-export default Login;
+export default LoginPage;
