@@ -47,21 +47,9 @@ app.get("/auth/redirect", async (req, res) => {
       }
     );
     const userDataJson = await userDataResponse.json();
-    /*
-        userDataJson
-        {
-            ok: true,
-            user: { name: 'my.name', id: 'xxxxx' },
-            team: { id: 'xxxxx' }
-        }
-    */
-    // You decide how save the response to the Database
-    // e.g. Model.save({ user_id: user.id, token: authJson.authed_user.access_token })
-    // You can return a JWT token to the frontend to use it in the future
+   
     console.log("userDataJson", userDataJson);
 
-    // Now you can assume this user logged in with his/her Slack account
-    // TODO: set-cookie etc
     res.redirect("http://localhost:3000/oauthdone?code=1234");
     //res.status(200).send("You've logged in with your Slack account!");
   } catch (e) {
