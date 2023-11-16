@@ -10,6 +10,10 @@ import { Button, Divider } from "@mui/material";
 
 const LoginForm = () => {
 
+  const url = "http://localhost:4000/api/v1/auth/slack"
+  const oAuthUrl = import.meta.env.VITE_OAUTH_URL
+  const clientId = "85239491699.6186207620565"
+
   const schema = Yup.object().shape({
         username: Yup.string().max(255, "Max 255").required(),
         password: Yup.string().required()
@@ -21,16 +25,8 @@ const LoginForm = () => {
       password:'1234'
     }
     
-    /*const LoginSchema = Yup.object().shape({
-        email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-        password: Yup.string().required('Password is required'),
-    });
 
-    const defaultValues = {
-        email: 'testadmin@soms.com',
-        password: '1234',
-    };
-    */
+
     const methods = useForm({
         resolver: yupResolver(schema),
         defaultValues: defaultValues
@@ -48,6 +44,18 @@ const LoginForm = () => {
 const onSubmit = (data) => {
   console.log("submit", data);
 }
+  const handlerFailure = (error) => {
+    console.log({ error })
+  }
+
+  const handlerSuccess = async (code) => {
+    // The component will return a slack OAuth verifier code, 
+    // you should send that code to your API and exchange your temporary OAuth verifier code for an access token.
+    const request = await fetch(oAuthUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) })
+    // If successfull you can redirect the user to the app.
+    const json = await request.json()
+    console.log(json)
+  }
 
     return (
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -57,7 +65,13 @@ const onSubmit = (data) => {
           <RHFTextField name='password' label='Password'/>
           <Button type='submit' variant="contained">Login</Button>  
           <Divider />
-          <Button type='submit' variant="contained">SlackLogin</Button> 
+          <SlackLogin
+            redirectUrl='http://localhost:4000/api/v1/auth/slack'
+            onFailure={handlerFailure}
+            onSuccess={handlerSuccess}
+            slackClientId='SLACK_CLIENT_ID'
+            slackUserScope='openid profile'
+          />
           <Divider />
           <Button href={`/signup`} >Sign Up</Button>      
         </Stack>
