@@ -4,7 +4,10 @@ const { pool } = require("./dbConfig");
 const http = require("http");
 const fs = require("fs");
 const https = require("https");
-const fetch = require("node-fetch");
+const { WebClient } = require("@slack/web-api");
+const cors = require("cors");
+
+app.use(cors());
 app.use(express.json());
 require("dotenv").config();
 
@@ -14,89 +17,93 @@ const options = {
 };
 
 
-const { WebClient } = require("@slack/web-api");
+const client_id = process.env.VITE_SLACK_CLIENT_ID 
+const client_secret = process.env.SLACK_CLIENT_SECRET 
+const redirect_uri = "https://localhost:443/auth/redirect";
+
 const client = new WebClient();
-const client_id = process.env.VITE_SLACK_CLIENT_ID;
-const client_secret = process.env.SLACK_CLIENT_SECRET;
+
 app.get("/auth/redirect", async (req, res) => {
-  // TODO: verify state parameter
   try {
-    const query = {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      method: "POST",
-      body: `code=${req.query.code}&client_id=${client_id}&client_secret=${client_secret}`,
-    };
-    const authResponse = await fetch(
-      "https://slack.com/api/oauth.v2.access",
-      query
-    );
-    const authJson = await authResponse.json();
+    const { code } = req.query;
 
-    console.log("authJson", authJson);
+    // Specify additional scopes here
+    const additionalScopes = "identity.basic,identity.email,openid,profile";
 
-    const userDataResponse = await fetch(
-      `https://slack.com/api/users.identity?user=${authJson.authed_user.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${authJson.authed_user.access_token}`,
-        },
-      }
-    );
-    const userDataJson = await userDataResponse.json();
+    // Exchange the code for an OAuth token
+    const result = await client.oauth.v2.access({
+      code,
+      client_id,
+      client_secret,
+      redirect_uri,
+      scope: additionalScopes, 
+    });
 
-    console.log("userDataJson", userDataJson);
+    console.log("OAuth Response", result);
+
+    // Use the token to get user information
+    const userDataResponse = await client.users.identity({
+      user: result.authed_user.id,
+      token: result.authed_user.access_token,
+    });
+
+    console.log("User Data", userDataResponse);
 
     res.redirect("http://localhost:3000/oauthdone?code=1234");
-    //res.status(200).send("You've logged in with your Slack account!");
-  } catch (e) {
-    console.log(e);
-    res.status(500).send("Something wrong!");
+  } catch (error) {
+    console.error("Error during OAuth process:", error);
+    res.status(500).send("Something went wrong!");
   }
 });
-app.post("/auth", async (req, res, next) => {
-  const { code } = req.body;
-  const { VITE_SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, VITE_REDIRECT_URL } =
-    process.env;
-  // Validate code with Slack API to get the access token
-  const query = {
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    method: "POST",
-    body: `code=${code}&client_id=${VITE_SLACK_CLIENT_ID}&client_secret=${SLACK_CLIENT_SECRET}&redirect_uri=${VITE_REDIRECT_URL}`,
-  };
-  const authResponse = await fetch(
-    "https://slack.com/api/oauth.v2.access",
-    query
-  );
-  const authJson = await authResponse.json();
 
-  // Once we have the code we can use it with the Slack API to get the user data
-  const userDataResponse = await fetch(
-    `https://slack.com/api/users.identity?user=${authJson.authed_user.id}`,
-    {
-      headers: { Authorization: `Bearer ${authJson.authed_user.access_token}` },
-    }
-  );
-  const userDataJson = await userDataResponse.json();
 
-  // e.g. Model.save({ user_id: user.id, token: authJson.authed_user.access_token })
-  // You can return a JWT token to the frontend to use it in the future
-  console.log(userDataJson);
-  res.send({ message: "ok" });
-  next();
-});
 https.createServer(options, app).listen(443);
-
 http.createServer(app).listen(10000);
 
-//GET method below just to test if the server is running, when you create an endpoint you can delete this
 app.get("/", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM public.city");
-    //I received the output '{"user":"postgres"}' without 'public' preceding 'user' because PostgreSQL defaults to a behavior where referencing a 'user' table without specifying a schema results in the default system view or object named 'user' being referenced inadvertently. To explicitly refer to the 'user' table, I utilized the table's schema name or qualified the table name with the schema where it exists.
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error inserting data");
     console.error("Error executing query:", error);
   }
 });
+
+
+////sign up
+app.post("/api/signup", async (req, res) => {
+  try {
+    const { username, email, password, city, role } = req.body;
+
+    // Check if the user already exists
+    const existingUser = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "User with this email already exists." });
+    }
+
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert the new user into the database
+    await pool.query(
+      "INSERT INTO users (username, email, password, city, role) VALUES ($1, $2, $3, $4, $5)",
+      [username, email, hashedPassword, city, role]
+    );
+
+    res.status(201).json({ message: "User registered successfully." });
+  } catch (error) {
+    console.error("Error during user registration:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+
 const port = process.env.PORT || 10000;
