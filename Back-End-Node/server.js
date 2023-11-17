@@ -12,11 +12,7 @@ const options = {
   key: fs.readFileSync("client-key.pem"),
   cert: fs.readFileSync("client-cert.pem"),
 };
-// app.use(function (req, res, next) {
-//   res.writeHead(200);
-//   res.end("hello world\n");
-//   next();
-// });
+
 
 const { WebClient } = require("@slack/web-api");
 const client = new WebClient();
@@ -81,15 +77,7 @@ app.post("/auth", async (req, res, next) => {
     }
   );
   const userDataJson = await userDataResponse.json();
-  /*
-        userDataJson
-        {
-            ok: true,
-            user: { name: 'my.name', id: 'xxxxx' },
-            team: { id: 'xxxxx' }
-        }
-    */
-  // You decide how save the response to the Database
+
   // e.g. Model.save({ user_id: user.id, token: authJson.authed_user.access_token })
   // You can return a JWT token to the frontend to use it in the future
   console.log(userDataJson);

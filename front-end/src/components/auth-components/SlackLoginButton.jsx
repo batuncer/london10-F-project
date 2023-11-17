@@ -1,17 +1,18 @@
 import { Button, IconButton } from "@mui/material";
 import Iconify from "../iconify/Iconify";
+const redirectUri = encodeURIComponent('https://localhost:443/auth/redirect');
 
 export default function SlackLoginButton() {
     let slack_url = ""
     const slackClientId = '6209798254180.6230482777808'
-    slack_url = `https://slack.com/openid/connect/authorize?response_type=code&scope=openid&user_scope=identity.basic%2Copenid%2Cidentity.email&client_id=${slackClientId}&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect`
+    slack_url = `https://slack.com/openid/connect/authorize?response_type=code&scope=openid&user_scope=identity.basic%2Copenid%2Cidentity.email&client_id=${slackClientId}&redirect_uri=${redirectUri}`
     function openPopup() {
         const width = 600;
-        const height = 700;
+        const height = 800;
         const left = window.screenX + window.innerWidth / 2 - width / 2;
         const top = window.screenY + window.innerHeight / 2 - height / 2;
 
-        const url = `https://slack.com/oauth/v2/authorize?scope=identity.basic,openid,identity.email&user_scope=identity.basic%2Copenid%2Cidentity.email&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&amp;client_id=6209798254180.6230482777808`;
+        // const url = `https://slack.com/oauth/v2/authorize?scope=identity.basic,openid,identity.email&user_scope=identity.basic%2Copenid%2Cidentity.email&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&amp;client_id=6209798254180.6230482777808`;
 
         return window.open(
             slack_url,
