@@ -33,6 +33,7 @@ const SignUp = () => {
 
     // }
     const CITY_OPTIONS = [
+        { value: '', label: 'Choose Location' }, // Placeholder option.
         { value: 'London', label: 'London' },
         { value: 'Glasgow', label: 'Glasgow' },
         { value: 'SouthAfrica', label: 'South Africa' },
@@ -40,10 +41,11 @@ const SignUp = () => {
         { value: 'Virtual', label: 'Virtual' },
     ];
 
-    const ROLE_OPTIONS = [{ value: 'Volunteer', label: 'Volunteer' },
-    { value: 'Traniee', label: 'Traniee' },
-
-    ]
+    const ROLE_OPTIONS = [
+        { value: '', label: 'Choose Role' }, // Placeholder option
+        { value: 'Volunteer', label: 'Volunteer' },
+        { value: 'Trainee', label: 'Trainee' },
+    ];
     /*const LoginSchema = Yup.object().shape({
         email: Yup.string().email('Email must be a valid email address').required('Email is required'),
         password: Yup.string().required('Password is required'),
@@ -72,16 +74,37 @@ Personal Development Rep 2
         getValues,
         formState: { isSubmitting, isValid },
     } = methods;
+    /////DAtabase connect ??
+    const onSubmit = async (data) => {
+        try {
+            const response = await fetch("http://localhost:10000/api/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
-    const onSubmit = (data) => {
-        console.log("submit", data);
-    }
+            const result = await response.json();
 
+            if (response.ok) {
+                console.log(result.message);
+                // Replace to main page when we created
+            } else {
+                console.error(result.error);
+                // Display an error message to the user
+            }
+        } catch (error) {
+            console.error("Error during signup:", error);
+            // Handle unexpected errors
+        }
+    };
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
 
             <Stack spacing={2}>
                 <RHFTextField name='username' label='User Name' />
+                <RHFTextField name='email' label='Email' />
                 <RHFTextField
                     name="password"
                     label="Password"
@@ -112,18 +135,21 @@ Personal Development Rep 2
                 />
                 <RHFSelect name={"city"} label="Location" variant={"outlined"} InputLabelProps={{ shrink: true }}>
                     {CITY_OPTIONS.map((category) => (
-                        <option key={category.value} value={category.value}>
+                        <option key={category.value} value={category.value} disabled={category.value === ''}>
                             {category.label}
                         </option>
                     ))}
                 </RHFSelect>
+
                 <RHFSelect name={"role"} label="Role" variant={"outlined"} InputLabelProps={{ shrink: true }}>
                     {ROLE_OPTIONS.map((category) => (
-                        <option key={category.value} value={category.value}>
+                        <option key={category.value} value={category.value} disabled={category.value === ''}>
                             {category.label}
                         </option>
                     ))}
-                </RHFSelect>                <Button type='submit' variant="contained">Sign Up</Button>
+                </RHFSelect>
+
+                <Button type='submit' variant="contained">Sign Up</Button>
                 <Button href={`/login`} >Login</Button>
 
             </Stack>
