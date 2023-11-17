@@ -18,16 +18,16 @@ const LoginForm = () => {
 
   })
 
-  const defaultValues = {
-    username: 'baki',
-    password: '1234'
-  }
+  // const defaultValues = {
+  //   username: 'baki',
+  //   password: '1234'
+  // }
 
 
 
   const methods = useForm({
     resolver: yupResolver(schema),
-    defaultValues: defaultValues
+
   });
 
   const {

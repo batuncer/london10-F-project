@@ -23,21 +23,26 @@ const SignUp = () => {
 
     })
 
-    const defaultValues = {
-        username: 'baki',
-        password: '1234',
-        password_confirmation:'',
-        email: "baki@gmail.com",
-        city: "Istanbul",
-        role: "Coordinator"
+    // const defaultValues = {
+    //     username: 'baki',
+    //     password: '1234',
+    //     password_confirmation: '',
+    //     email: "baki@gmail.com",
+    //     city: "Istanbul",
+    //     role: "Coordinator"
 
-    }
-    
-    const ROLE_OPTIONS = [{ value: 'Coordinator', label:'Coordinator'},
-        { value: 'LeadTeacher', label: 'Lead Teacher' },
-        { value: 'TeachingAssistant', label: 'Teaching Assistant' },
-        { value: 'AssistantLeadTeacher', label: 'Assistant Lead Teacher' },
-        { value: 'PersonalDevelopmentRep', label: 'Personal Development Rep' },
+    // }
+    const CITY_OPTIONS = [
+        { value: 'London', label: 'London' },
+        { value: 'Glasgow', label: 'Glasgow' },
+        { value: 'SouthAfrica', label: 'South Africa' },
+        { value: 'WestMidlands', label: 'West Midlands' },
+        { value: 'Virtual', label: 'Virtual' },
+    ];
+
+    const ROLE_OPTIONS = [{ value: 'Volunteer', label: 'Volunteer' },
+    { value: 'Traniee', label: 'Traniee' },
+
     ]
     /*const LoginSchema = Yup.object().shape({
         email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -56,7 +61,7 @@ Personal Development Rep 2
     */
     const methods = useForm({
         resolver: yupResolver(schema),
-        defaultValues: defaultValues
+
     });
 
     const {
@@ -105,7 +110,13 @@ Personal Development Rep 2
                         ),
                     }}
                 />
-                <RHFTextField name='city' label='City' />
+                <RHFSelect name={"city"} label="Location" variant={"outlined"} InputLabelProps={{ shrink: true }}>
+                    {CITY_OPTIONS.map((category) => (
+                        <option key={category.value} value={category.value}>
+                            {category.label}
+                        </option>
+                    ))}
+                </RHFSelect>
                 <RHFSelect name={"role"} label="Role" variant={"outlined"} InputLabelProps={{ shrink: true }}>
                     {ROLE_OPTIONS.map((category) => (
                         <option key={category.value} value={category.value}>
@@ -113,7 +124,7 @@ Personal Development Rep 2
                         </option>
                     ))}
                 </RHFSelect>                <Button type='submit' variant="contained">Sign Up</Button>
-                <Button href={`/login`} >Login</Button>      
+                <Button href={`/login`} >Login</Button>
 
             </Stack>
 
