@@ -5,15 +5,11 @@ dotenv.config();
 //Used Pool class instead Client, because operation requires to handle multiple concurrent requests
 //The Client class represents a single connection to the PostgreSQL database that suitable for short-lived operations
 const pool = new Pool({
-  user: "baki", 
-  password: "1104", 
-  host: "localhost",
-  database: "class_planner",
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
 });
-
 
 
 //DB is connected, below is to see what tables are in the DB

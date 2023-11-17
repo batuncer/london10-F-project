@@ -1,14 +1,14 @@
 const express = require("express");
 const app = express();
 const { pool } = require("./dbConfig");
-var http = require("http");
-var fs = require("fs");
-var https = require("https");
-var fetch = require("node-fetch");
+const http = require("http");
+const fs = require("fs");
+const https = require("https");
+const fetch = require("node-fetch");
 app.use(express.json());
 require("dotenv").config();
 
-var options = {
+const options = {
   key: fs.readFileSync("client-key.pem"),
   cert: fs.readFileSync("client-cert.pem"),
 };
@@ -20,8 +20,8 @@ var options = {
 
 const { WebClient } = require("@slack/web-api");
 const client = new WebClient();
-const client_id = "6209798254180.6230482777808";
-const client_secret = "4fdc85a575bd64126a04a533934d5aa7";
+const client_id = process.env.VITE_SLACK_CLIENT_ID;
+const client_secret = process.env.SLACK_CLIENT_SECRET;
 app.get("/auth/redirect", async (req, res) => {
   // TODO: verify state parameter
   try {
@@ -47,7 +47,7 @@ app.get("/auth/redirect", async (req, res) => {
       }
     );
     const userDataJson = await userDataResponse.json();
-   
+
     console.log("userDataJson", userDataJson);
 
     res.redirect("http://localhost:3000/oauthdone?code=1234");
@@ -72,14 +72,7 @@ app.post("/auth", async (req, res, next) => {
     query
   );
   const authJson = await authResponse.json();
-  /* 
-        authJson
-        {
-            code: 'xxxx.xxx.xxxxxx...',
-            client_id: 'xxxx.xxxx',
-            client_secret: 'xxxxxxx...'
-        }
-    */
+
   // Once we have the code we can use it with the Slack API to get the user data
   const userDataResponse = await fetch(
     `https://slack.com/api/users.identity?user=${authJson.authed_user.id}`,
@@ -110,17 +103,12 @@ http.createServer(app).listen(10000);
 //GET method below just to test if the server is running, when you create an endpoint you can delete this
 app.get("/", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM cities");
+    const result = await pool.query("SELECT * FROM public.city");
     //I received the output '{"user":"postgres"}' without 'public' preceding 'user' because PostgreSQL defaults to a behavior where referencing a 'user' table without specifying a schema results in the default system view or object named 'user' being referenced inadvertently. To explicitly refer to the 'user' table, I utilized the table's schema name or qualified the table name with the schema where it exists.
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error inserting data");
     console.error("Error executing query:", error);
   }
-  next();
 });
-
 const port = process.env.PORT || 10000;
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
