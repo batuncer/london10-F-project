@@ -5,7 +5,9 @@ const redirectUri = encodeURIComponent('https://localhost:443/auth/redirect');
 export default function SlackLoginButton() {
     let slack_url = ""
     const slackClientId = '6209798254180.6230482777808'
-    slack_url = `https://slack.com/openid/connect/authorize?response_type=code&scope=openid&user_scope=identity.basic%2Copenid%2Cidentity.email&client_id=${slackClientId}&redirect_uri=${redirectUri}`
+    slack_url = `https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=${slackClientId}`
+
+
     function openPopup() {
         const width = 600;
         const height = 800;
