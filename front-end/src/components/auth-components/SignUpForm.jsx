@@ -33,7 +33,7 @@ const SignUp = () => {
 
     // }
     const CITY_OPTIONS = [
-        { value: '', label: 'Choose Location' }, // Placeholder option.
+        { value: '', label: 'Choose Location' },
         { value: 'London', label: 'London' },
         { value: 'Glasgow', label: 'Glasgow' },
         { value: 'SouthAfrica', label: 'South Africa' },
@@ -42,7 +42,7 @@ const SignUp = () => {
     ];
 
     const ROLE_OPTIONS = [
-        { value: '', label: 'Choose Role' }, // Placeholder option
+        { value: '', label: 'Choose Role' },
         { value: 'Volunteer', label: 'Volunteer' },
         { value: 'Trainee', label: 'Trainee' },
     ];

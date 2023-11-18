@@ -16,9 +16,8 @@ const options = {
   cert: fs.readFileSync("client-cert.pem"),
 };
 
-
-const client_id = process.env.VITE_SLACK_CLIENT_ID 
-const client_secret = process.env.SLACK_CLIENT_SECRET 
+const client_id = process.env.VITE_SLACK_CLIENT_ID;
+const client_secret = process.env.SLACK_CLIENT_SECRET;
 const redirect_uri = "https://localhost:443/auth/redirect";
 
 const client = new WebClient();
@@ -36,7 +35,7 @@ app.get("/auth/redirect", async (req, res) => {
       client_id,
       client_secret,
       redirect_uri,
-      scope: additionalScopes, 
+      scope: additionalScopes,
     });
 
     console.log("OAuth Response", result);
@@ -56,7 +55,6 @@ app.get("/auth/redirect", async (req, res) => {
   }
 });
 
-
 https.createServer(options, app).listen(443);
 http.createServer(app).listen(10000);
 
@@ -69,7 +67,6 @@ app.get("/", async (req, res) => {
     console.error("Error executing query:", error);
   }
 });
-
 
 ////sign up
 app.post("/api/signup", async (req, res) => {
@@ -104,6 +101,5 @@ app.post("/api/signup", async (req, res) => {
     res.status(500).json({ error: "Something went wrong." });
   }
 });
-
 
 const port = process.env.PORT || 10000;
