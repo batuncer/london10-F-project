@@ -6,6 +6,7 @@ const fs = require("fs");
 const https = require("https");
 const { WebClient } = require("@slack/web-api");
 const cors = require("cors");
+const {google} = require("googleapis");
 
 app.use(cors());
 app.use(express.json());
@@ -70,40 +71,94 @@ app.get("/", async (req, res) => {
   }
 });
 
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_REDIRECT_URI
+);
 
-////sign up
-app.post("/api/signup", async (req, res) => {
+const SCOPES = [
+"https://www.googleapis.com/auth/calendar",
+// "https://www.googleapis.com/auth/calendar.events",
+];
+
+app.get("/calendar", (req, res) => {
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: SCOPES
+})
+res.redirect(url)
+})
+
+app.get("/calendar/redirect", async (req, res) => {
+  const code = req.query.code;
+  const { tokens } = await oauth2Client.getToken(code);
+  oauth2Client.setCredentials(tokens);
+
+  console.log(code)
+})
+const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+
+app.get("/create-event", async (req, res) => {
+  let newEvent = {
+    summary: "hello world",
+    location: "London, UK",
+    startDateTime: "2023-11-26T10:00:00",
+    endDateTime: "2023-11-26T17:00:00",
+  };
+ 
+  await calendar.events.insert({
+    // auth: oauth2Client,
+    calendarId: "4c572a675834bb44f3c7a1cd40456214e4a2a75fa67a890e40212effcd7d9989@group.calendar.google.com",
+    requestBody: {
+      summary: newEvent.summary,
+      location: newEvent.location,
+      colorId: "7",
+      start: {
+        dateTime: new Date(newEvent.startDateTime),
+      },
+      end: {
+        dateTime: new Date(newEvent.endDateTime),
+      },
+    },
+  });
+
+  res.send("at least something")
+})
+
+app.get("/events", async (req, res) => {
   try {
-    const { username, email, password, city, role } = req.body;
+    const calendarResponse = await calendar.events.list({
+      calendarId:
+        "4c572a675834bb44f3c7a1cd40456214e4a2a75fa67a890e40212effcd7d9989@group.calendar.google.com",
+      timeMin: new Date().toISOString(),
+      maxResults: 10,
+      singleEvents: true,
+      orderBy: "startTime",
+    });
 
-    // Check if the user already exists
-    const existingUser = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return res
-        .status(400)
-        .json({ error: "User with this email already exists." });
+    const events = calendarResponse.data.items;
+    if (!events || events.length === 0) {
+      console.log("No upcoming events found.");
+      res.status(404).send("No upcoming events found.");
+      return;
     }
 
-    // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    console.log("Upcoming 10 events:");
+    events.forEach((event, i) => {
+      const start = event.start.dateTime || event.start.date;
+      console.log(`${start} - ${event.summary}`);
+    });
 
-    // Insert the new user into the database
-    await pool.query(
-      "INSERT INTO users (username, email, password, city, role) VALUES ($1, $2, $3, $4, $5)",
-      [username, email, hashedPassword, city, role]
-    );
-
-    res.status(201).json({ message: "User registered successfully." });
+    res.status(200).json(events); // Or return these events in the response
   } catch (error) {
-    console.error("Error during user registration:", error);
-    res.status(500).json({ error: "Something went wrong." });
+    console.error("Error fetching events:", error);
+    res.status(500).send("Error fetching events");
   }
 });
 
+const PORT = process.env.PORT || 3500;
 
-const port = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log("Server is running on port:", PORT)
+})

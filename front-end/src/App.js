@@ -1,4 +1,5 @@
 import "./App.css";
+import Calendar from "./components/auth-components/Calendar";
 import Footer from "./components/footer/footer";
 import Header from "./components/header/header";
 import MainRoutes from "./routes";
@@ -8,6 +9,7 @@ function App() {
     <div className="App">
       <Header />
       <MainRoutes />
+      {/* <Calendar /> */}
       <Footer />
     </div>
   );
