@@ -6,6 +6,7 @@ const fs = require("fs");
 const https = require("https");
 const { WebClient } = require("@slack/web-api");
 const cors = require("cors");
+const { Console } = require("console");
 
 app.use(cors());
 app.use(express.json());
@@ -26,27 +27,60 @@ app.get("/auth/redirect", async (req, res) => {
   try {
     const { code } = req.query;
 
-    // Specify additional scopes here
-    const additionalScopes = "identity.basic,identity.email,openid,profile";
-
     // Exchange the code for an OAuth token
     const result = await client.oauth.v2.access({
       code,
       client_id,
       client_secret,
       redirect_uri,
-      scope: additionalScopes,
     });
 
     console.log("OAuth Response", result);
 
     // Use the token to get user information
-    const userDataResponse = await client.users.identity({
+    const userIdentity = await client.users.identity({
       user: result.authed_user.id,
       token: result.authed_user.access_token,
     });
 
-    console.log("User Data", userDataResponse);
+    const userProfile = await client.users.profile.get({
+      user: result.authed_user.id,
+      token: result.authed_user.access_token,
+    });
+
+    console.log("neded", userIdentity, userProfile);
+    // console.log("User Data", userDataResponse);
+     const existingUser = await pool.query(
+       "SELECT * FROM user WHERE email = $1",
+       [userIdentity['user']['email']]
+     );
+      let jwtToken = ""// later i will organise
+     if (existingUser.rows.length > 0) {
+      //Login Bussiness
+  jwtToken = "1234";
+     }
+     else {
+       //register bussines
+       // Hash the password
+       const saltRounds = 10;
+
+       // Insert the new user into the database
+       await pool.query(
+         "INSERT INTO user (username, email, password, city, role) VALUES ($1, $2, $3, $4, $5)",
+         [
+           userProfile["profile"]["real_name"],
+           userIdentity["user"]["email"],
+           "London",
+           userProfile["profile"]["title"],
+         ]
+       );
+
+       //login bussiness
+       jwtToken = "!@#$"
+     }
+
+     
+     
 
     res.redirect("http://localhost:3000/oauthdone?code=1234");
   } catch (error) {
@@ -69,37 +103,37 @@ app.get("/", async (req, res) => {
 });
 
 ////sign up
-app.post("/api/signup", async (req, res) => {
-  try {
-    const { username, email, password, city, role } = req.body;
+// app.post("/api/signup", async (req, res) => {
+//   try {
+//     const { username, email, password, city, role } = req.body;
 
-    // Check if the user already exists
-    const existingUser = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
+//     // Check if the user already exists
+//     const existingUser = await pool.query(
+//       "SELECT * FROM users WHERE email = $1",
+//       [email]
+//     );
 
-    if (existingUser.rows.length > 0) {
-      return res
-        .status(400)
-        .json({ error: "User with this email already exists." });
-    }
+//     if (existingUser.rows.length > 0) {
+//       return res
+//         .status(400)
+//         .json({ error: "User with this email already exists." });
+//     }
 
-    // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+//     // Hash the password
+//     const saltRounds = 10;
+//     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert the new user into the database
-    await pool.query(
-      "INSERT INTO users (username, email, password, city, role) VALUES ($1, $2, $3, $4, $5)",
-      [username, email, hashedPassword, city, role]
-    );
+//     // Insert the new user into the database
+//     await pool.query(
+//       "INSERT INTO users (username, email, password, city, role) VALUES ($1, $2, $3, $4, $5)",
+//       [username, email, hashedPassword, city, role]
+//     );
 
-    res.status(201).json({ message: "User registered successfully." });
-  } catch (error) {
-    console.error("Error during user registration:", error);
-    res.status(500).json({ error: "Something went wrong." });
-  }
-});
+//     res.status(201).json({ message: "User registered successfully." });
+//   } catch (error) {
+//     console.error("Error during user registration:", error);
+//     res.status(500).json({ error: "Something went wrong." });
+//   }
+// });
 
 const port = process.env.PORT || 10000;

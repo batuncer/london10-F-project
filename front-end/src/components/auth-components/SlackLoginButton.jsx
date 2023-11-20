@@ -1,11 +1,11 @@
 import { Button, IconButton } from "@mui/material";
 import Iconify from "../iconify/Iconify";
-const redirectUri = encodeURIComponent('https://localhost:443/auth/redirect');
 
 export default function SlackLoginButton() {
     let slack_url = ""
-    const slackClientId = '6209798254180.6230482777808'
-    slack_url = `https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=${slackClientId}`
+    const slackClientId = '6209798254180.6224787694115'
+
+    slack_url = "https://slack.com/oauth/v2/authorize?scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&users%3Aread&client_id=6209798254180.6224787694115"
 
 
     function openPopup() {
