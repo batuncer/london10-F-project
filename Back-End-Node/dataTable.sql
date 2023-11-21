@@ -1,6 +1,7 @@
 CREATE TABLE city (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
+    name VARCHAR(100),
+    calendar_id varchar(250)
 );
 
 CREATE TABLE user (
