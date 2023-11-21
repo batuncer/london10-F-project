@@ -57,7 +57,7 @@ app.get("/auth/redirect", async (req, res) => {
       let jwtToken = ""// later i will organise
      if (existingUser.rows.length > 0) {
       //Login Bussiness
-  jwtToken = "1234";
+       let jwtToken = "";
      }
      else {
        //register bussines
