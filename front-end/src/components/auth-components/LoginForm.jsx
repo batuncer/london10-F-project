@@ -66,7 +66,6 @@ const LoginForm = () => {
         <SlackLoginButton />
         <Button href={`/signup`} >Sign Up</Button>
       </Stack>
-
     </FormProvider>
 
   )

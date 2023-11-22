@@ -9,19 +9,12 @@ const Card = ({ poster }) => {
     };
 
     return (
-        <div className={`jt-moviecard ${collapsed ? 'collapsed' : ''}`}>
+        <div className={`classCard ${collapsed ? 'collapsed' : ''}`}>
             <div className="background">
                 <img src={poster} alt="Movie Poster" />
             </div>
             <div className="content">
-                <div className="row top">
-                    <div className="element left">Booking Code Here</div>
-                    <div className="element">
-                        <div className="sub right">Print Ticket</div>
-                        <div className="sub right">Add Card</div>
-                        <div className="sub right">Add Food</div>
-                    </div>
-                </div>
+               
                 <div className="row">
                     <div className="element">Class Info</div>
                     <div className="seat-circle right">

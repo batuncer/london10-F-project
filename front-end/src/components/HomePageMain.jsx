@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@mui/styles';
 import backgroundImage from '../assets/cyf.png';
 import SignupModal from './SignupModal';
+import {  } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
