@@ -1,0 +1,13 @@
+// Main.scss
+
+.main-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.class-card {
+  //idth: 80%;
+  margin-bottom: 70px;
+  background-color: red;
+}

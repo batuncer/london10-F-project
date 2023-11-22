@@ -2,10 +2,10 @@ import { Button, IconButton } from "@mui/material";
 import Iconify from "../iconify/Iconify";
 
 export default function SlackLoginButton() {
-    let slack_url = ""
-    const slackClientId = '6209798254180.6224787694115'
+    //let slack_url = ""
+    const slackClientId = "6209798254180.6224787694115"
 
-    slack_url = `https://slack.com/oauth/v2/authorize?scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&users%3Aread&client_id=${slackClientId}`
+    let slack_url = `https://slack.com/oauth/v2/authorize?scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&identity%3Abasic%2Cusers%3Aread&client_id=${slackClientId}`
 
 
     function openPopup() {
@@ -74,7 +74,7 @@ export default function SlackLoginButton() {
             startIcon={
                 <Iconify icon='devicon:slack' />}
             onClick={handleClick}>
-            Slack Login
+            Signup With Slack
         </Button>
     )
 }
