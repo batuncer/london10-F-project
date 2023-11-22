@@ -35,7 +35,7 @@ CREATE TABLE session (
 
 CREATE TABLE attendance (
     id SERIAL PRIMARY KEY,
-    user_attendances_id INT REFERENCES user(id),
+    user_id INT REFERENCES user_attendances(id),
     session_id INT REFERENCES session(id),
     role VARCHAR(100),
     period VARCHAR(100)
