@@ -1,7 +1,7 @@
-import './App.css';
-import Footer from './components/footer/footer';
-import Header from './components/header/header';
-import MainRoutes from './routes';
+import "./App.css";
+import Footer from "./components/footer/footer";
+import Header from "./components/header/header";
+import MainRoutes from "./routes/MainRoutes";
 
 function App() {
   return (
@@ -9,7 +9,6 @@ function App() {
       <Header />
       <MainRoutes />
       <Footer />
-
     </div>
   );
 }
