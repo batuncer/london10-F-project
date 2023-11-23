@@ -4,7 +4,7 @@ CREATE TABLE city (
     calendar_id varchar(250)
 );
 
-CREATE TABLE user (
+CREATE TABLE user_attendance (
     id SERIAL PRIMARY KEY,
     username VARCHAR(250),
     email VARCHAR(250),
@@ -35,7 +35,7 @@ CREATE TABLE session (
 
 CREATE TABLE attendance (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES user(id),
+    user_id INT REFERENCES user_attendance(id),
     session_id INT REFERENCES session(id),
     role int REFERENCES roles(id),
     period VARCHAR(100)
@@ -44,4 +44,4 @@ CREATE TABLE attendance (
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
     city VARCHAR(150)
-)
+);
