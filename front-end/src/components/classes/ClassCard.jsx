@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "../styles/ClassCard.scss"
+import "../../styles/ClassCard.scss"
 
 const Card = ({ poster }) => {
     const [collapsed, setCollapsed] = useState(true);

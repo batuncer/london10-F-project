@@ -1,7 +1,6 @@
-import ClassCard from "./ClassCard";
-import Navbar from "./Navbar"
-//import "../styles/Main.scss"
+import Navbar from "../components/barComponents/Navbar"
 import { makeStyles } from '@mui/styles';
+import ClassCard from "../components/classes/ClassCard";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 const Main = () => {
     const classes = useStyles();
 
-    return(
+    return (
         <div className="main-container">
             <Navbar />
             <ClassCard className={classes.root} />
