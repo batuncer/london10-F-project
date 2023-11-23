@@ -62,7 +62,7 @@ export default function SlackLoginButton() {
     }
 
     const onSuccess = (code) => {
-        alert(code)
+        console.log(code)
     }
 
     const onFailure = (error) => {

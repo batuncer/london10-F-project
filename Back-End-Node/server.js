@@ -7,6 +7,8 @@ const https = require("https");
 const { WebClient } = require("@slack/web-api");
 const cors = require("cors");
 const { Console } = require("console");
+const secret = process.env.JWT_SECRET;
+const jwt = require("jsonwebtoken");
 
 app.use(cors());
 app.use(express.json());
@@ -22,6 +24,14 @@ const client_secret = process.env.SLACK_CLIENT_SECRET;
 const redirect_uri = "https://localhost:443/auth/redirect";
 
 const client = new WebClient();
+
+const createToken = (userId) => {
+  const token = jwt.sign({ id: userId, roles: [`student`] }, secret, {
+    expiresIn: 86400, // expires in 24 hours
+  });
+
+  return token;
+};
 
 app.get("/auth/redirect", async (req, res) => {
   try {
@@ -56,16 +66,13 @@ app.get("/auth/redirect", async (req, res) => {
     );
     let jwtToken = ""; // later i will organise
     if (existingUser.rows.length > 0) {
+      console.log(existingUser);
       //Login Bussiness
-      let jwtToken = "";
+      jwtToken = createToken(existingUser.rows[0]["id"]);
     } else {
-      //register bussines
-      // Hash the password
-      const saltRounds = 10;
-
       // Insert the new user into the database
-      await pool.query(
-        "INSERT INTO public.user (created_at, password, homecity, default_role, email, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      var insertResult = await pool.query(
+        "INSERT INTO public.user (created_at, password, homecity, default_role, email, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
         [
           new Date(),
           null,
@@ -78,10 +85,10 @@ app.get("/auth/redirect", async (req, res) => {
       );
 
       //login bussiness
-      jwtToken = "!@#$";
+      jwtToken = createToken(insertResult.rows[0]["id"]);
     }
 
-    res.redirect("http://localhost:3000/oauthdone?code=1234");
+    res.redirect(`http://localhost:3000/oauthdone?code=${jwtToken}`);
   } catch (error) {
     console.error("Error during OAuth process:", error);
     res.status(500).send("Something went wrong!");
@@ -102,37 +109,38 @@ app.get("/", async (req, res) => {
 });
 
 ////sign up
-// app.post("/api/signup", async (req, res) => {
-//   try {
-//     const { username, email, password, city, role } = req.body;
+app.post("/api/signup", async (req, res) => {
+  try {
+    const { first_name, last_name, email, password, city, role } = req.body;
 
-//     // Check if the user already exists
-//     const existingUser = await pool.query(
-//       "SELECT * FROM users WHERE email = $1",
-//       [email]
-//     );
+    // Check if the user already exists
+    const existingUser = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
 
-//     if (existingUser.rows.length > 0) {
-//       return res
-//         .status(400)
-//         .json({ error: "User with this email already exists." });
-//     }
+    if (existingUser.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "User with this email already exists." });
+    }
 
-//     // Hash the password
-//     const saltRounds = 10;
-//     const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-//     // Insert the new user into the database
-//     await pool.query(
-//       "INSERT INTO users (username, email, password, city, role) VALUES ($1, $2, $3, $4, $5)",
-//       [username, email, hashedPassword, city, role]
-//     );
+    // Insert the new user into the database
+    const insertResult = await pool.query(
+      "INSERT INTO public.user (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [first_name, last_name, email, hashedPassword, city, role]
+    );
+    const jwtToken = createToken(insertResult.rows[0]["id"]);
 
-//     res.status(201).json({ message: "User registered successfully." });
-//   } catch (error) {
-//     console.error("Error during user registration:", error);
-//     res.status(500).json({ error: "Something went wrong." });
-//   }
-// });
+    res.status(201).json({ message: "User registered successfully." ,token:jwtToken});
+  } catch (error) {
+    console.error("Error during user registration:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
 
 const port = process.env.PORT || 10000;
