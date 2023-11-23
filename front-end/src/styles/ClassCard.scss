@@ -1,0 +1,105 @@
+$base-padding: 15px;
+$base-size: 14px;
+$primary-color: #4A1380;
+$background-color: white;
+$text-color: black;
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+
+
+
+.classCard {
+	position: relative;
+	width: 95%;
+	max-height: 345px;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	margin:50px 50px;
+	border-radius: 10px;
+	&.collapsed {
+		max-height: 250px;
+	}
+	.background {
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			overflow: hidden;
+			filter: blur(70px);
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+	}
+	.content {
+		position: absolute;
+		top: 0;
+		padding: $base-padding;
+		color: $background-color;
+		width: 100%;
+		height: 100%;
+		.row {
+			width: 100%;
+			transition: all 0.3s ease;
+			&.hide {
+			opacity: 0;
+			}
+		}
+		.element {
+			width: 50%;
+			display: inline-block;
+			padding: $base-padding/2;
+		}
+		.sub {
+			padding: 0;
+		}
+		.left {
+			float: left;
+		}
+		.right {
+			float: right;
+			padding-left: $base-padding * 2;
+			top: 0;
+		}
+		.top {
+			border-bottom: thin solid $background-color;
+		}
+		.bar.bottom {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			cursor: pointer;
+			.sub {
+				padding: $base-padding;
+			}
+		}
+		.seat-circle {
+			position: absolute;
+			border: thin solid $background-color;
+			width: 80px;
+  	  height: 80px;
+			border-radius: 50%;
+			top: $base-padding * 5;
+			right: $base-padding * 2;
+			.count, .unit {
+				display: block;
+				text-align: center;
+				position: absolute;
+			}
+			.count {
+				font-size: 1.2em;
+				margin: 0;
+				top: 20%;
+				left: 42%;
+			}
+			.unit {
+				font-size: 0.9em;
+				top: 55%;
+				left: 27%;
+			}
+		}
+	}
+}
