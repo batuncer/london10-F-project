@@ -50,37 +50,36 @@ app.get("/auth/redirect", async (req, res) => {
 
     console.log("neded", userIdentity, userProfile);
     // console.log("User Data", userDataResponse);
-     const existingUser = await pool.query(
-       "SELECT * FROM user WHERE email = $1",
-       [userIdentity['user']['email']]
-     );
-      let jwtToken = ""// later i will organise
-     if (existingUser.rows.length > 0) {
+    const existingUser = await pool.query(
+      "SELECT * FROM public.user WHERE email = $1",
+      [userIdentity["user"]["email"]]
+    );
+    let jwtToken = ""; // later i will organise
+    if (existingUser.rows.length > 0) {
       //Login Bussiness
-       let jwtToken = "";
-     }
-     else {
-       //register bussines
-       // Hash the password
-       const saltRounds = 10;
+      let jwtToken = "";
+    } else {
+      //register bussines
+      // Hash the password
+      const saltRounds = 10;
 
-       // Insert the new user into the database
-       await pool.query(
-         "INSERT INTO user (username, email, password, city, role) VALUES ($1, $2, $3, $4, $5)",
-         [
-           userProfile["profile"]["real_name"],
-           userIdentity["user"]["email"],
-           "London",
-           userProfile["profile"]["title"],
-         ]
-       );
+      // Insert the new user into the database
+      await pool.query(
+        "INSERT INTO public.user (created_at, password, homecity, default_role, email, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+        [
+          new Date(),
+          null,
+          "London",
+          userProfile["profile"]["title"],
+          userIdentity["user"]["email"],
+          userProfile["profile"]["first_name"],
+          userProfile["profile"]["last_name"],
+        ]
+      );
 
-       //login bussiness
-       jwtToken = "!@#$"
-     }
-
-     
-     
+      //login bussiness
+      jwtToken = "!@#$";
+    }
 
     res.redirect("http://localhost:3000/oauthdone?code=1234");
   } catch (error) {
