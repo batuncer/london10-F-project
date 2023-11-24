@@ -103,16 +103,22 @@ app.get("/create-event", async (req, res) => {
   let newEvent = {
     summary: "hello world",
     location: "London, UK",
-    startDateTime: "2023-11-26T10:00:00",
-    endDateTime: "2023-11-26T17:00:00",
+    startDateTime: "2023-11-25T10:00:00",
+    endDateTime: "2023-11-25T17:00:00",
   };
  
   await calendar.events.insert({
     // auth: oauth2Client,
-    calendarId: "4c572a675834bb44f3c7a1cd40456214e4a2a75fa67a890e40212effcd7d9989@group.calendar.google.com",
+    calendarId:
+      "4c572a675834bb44f3c7a1cd40456214e4a2a75fa67a890e40212effcd7d9989@group.calendar.google.com",
     requestBody: {
       summary: newEvent.summary,
       location: newEvent.location,
+      attendees: [
+        {
+          email: "jonathanzheng8888@gmail.com",
+        },
+      ],
       colorId: "7",
       start: {
         dateTime: new Date(newEvent.startDateTime),
