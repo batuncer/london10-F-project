@@ -10,14 +10,14 @@ export default function SlackLoginButton() {
 
     // const myUrlWithParams = new URL("https://slack.com/oauth/v2/authorize");
 
-    // myUrlWithParams.searchParams.append("scope", "users:read,profile", "identity.email", identity.basic,users.profile:read");
+    // myUrlWithParams.searchParams.append("user_scope", "identity.basic,identity.email");
     // myUrlWithParams.searchParams.append("redirect_url", "https://localhost:443/auth/redirect");
     // myUrlWithParams.searchParams.append("client_id", slackClientId);
 
     // console.log(myUrlWithParams.href);
     // let slack_url = myUrlWithParams.href;
 
-    let slack_url = `https://slack.com/oauth/v2/authorize?scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&identity%3Abasic%2Cusers%3Aread&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&client_id=${slackClientId}`
+    let slack_url = `https://slack.com/oauth/v2/authorize?user_scope=identity.basic,identity.email&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&client_id=${slackClientId}`
     //https://testworkspace-9th7274.slack.com/oauth?client_id=6209798254180.6224787694115&scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&state=&granular_bot_scope=1&single_channel=0&install_redirect=&tracked=1&team=1
 
     function openPopup() {
