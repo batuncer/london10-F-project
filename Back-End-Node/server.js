@@ -9,6 +9,8 @@ const cors = require("cors");
 const { Console } = require("console");
 const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
+const backendUrl = process.env.BACK_END_URL;
+const localUrlSlack = process.env.BACK_END_URL_SLACK;
 
 app.use(cors());
 app.use(express.json());
@@ -21,7 +23,7 @@ const options = {
 
 const client_id = process.env.VITE_SLACK_CLIENT_ID;
 const client_secret = process.env.SLACK_CLIENT_SECRET;
-const redirect_uri = "https://localhost:443/auth/redirect";
+const redirect_uri = `${localUrlSlack}/auth/redirect`;
 
 const client = new WebClient();
 
@@ -64,7 +66,7 @@ app.get("/auth/redirect", async (req, res) => {
       "SELECT * FROM public.user WHERE email = $1",
       [userIdentity["user"]["email"]]
     );
-    let jwtToken = ""; // later i will organise
+    let jwtToken = ""; 
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
@@ -88,7 +90,7 @@ app.get("/auth/redirect", async (req, res) => {
       jwtToken = createToken(insertResult.rows[0]["id"]);
     }
 
-    res.redirect(`http://localhost:3000/oauthdone?code=${jwtToken}`);
+    res.redirect(`${backendUrl}/oauthdone?code=${jwtToken}`);
   } catch (error) {
     console.error("Error during OAuth process:", error);
     res.status(500).send("Something went wrong!");
