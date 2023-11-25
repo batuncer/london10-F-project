@@ -13,7 +13,7 @@ export default function SlackLoginButton() {
     const myUrlWithParams = new URL("https://slack.com/oauth/v2/authorize");
 
     myUrlWithParams.searchParams.append("user_scope", "identity.basic,identity.email");
-    myUrlWithParams.searchParams.append("redirect_url", `${backendUrl}/auth/redirect`);
+    myUrlWithParams.searchParams.append("redirect_uri", `${backendUrl}/auth/redirect`);
     myUrlWithParams.searchParams.append("client_id", slackClientId);
 
     console.log(myUrlWithParams.href);
