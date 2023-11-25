@@ -10,20 +10,15 @@ const { Console } = require("console");
 const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
 const backendUrl = process.env.BACK_END_URL;
-const localUrlSlack = process.env.BACK_END_URL_SLACK;
 
 app.use(cors());
 app.use(express.json());
 require("dotenv").config();
 
-const options = {
-  key: fs.readFileSync("client-key.pem"),
-  cert: fs.readFileSync("client-cert.pem"),
-};
 
 const client_id = process.env.VITE_SLACK_CLIENT_ID;
 const client_secret = process.env.SLACK_CLIENT_SECRET;
-const redirect_uri = `${localUrlSlack}/auth/redirect`;
+const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
 
 const client = new WebClient();
 
@@ -66,7 +61,7 @@ app.get("/auth/redirect", async (req, res) => {
       "SELECT * FROM public.user WHERE email = $1",
       [userIdentity["user"]["email"]]
     );
-    let jwtToken = ""; 
+    let jwtToken = "";
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
@@ -97,8 +92,19 @@ app.get("/auth/redirect", async (req, res) => {
   }
 });
 
-https.createServer(options, app).listen(443);
-http.createServer(app).listen(10000);
+if (process.env.LOCAL_DEVELOPMENT) {
+  // Slack requires https for OAuth, but locally we want to use http
+  // to avoid having to maintain our own certificates
+  const options = {
+    key: fs.readFileSync("client-key.pem"),
+    cert: fs.readFileSync("client-cert.pem"),
+  };
+  https.createServer(options, app).listen(443);
+  http.createServer(app).listen(10000);
+} else {
+  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
+  http.createServer(app).listen(10000);
+}
 
 app.get("/", async (req, res) => {
   try {
@@ -138,7 +144,7 @@ app.post("/api/signup", async (req, res) => {
     );
     const jwtToken = createToken(insertResult.rows[0]["id"]);
 
-    res.status(201).json({ message: "User registered successfully." ,token:jwtToken});
+    res.status(201).json({ message: "User registered successfully.", token: jwtToken });
   } catch (error) {
     console.error("Error during user registration:", error);
     res.status(500).json({ error: "Something went wrong." });
