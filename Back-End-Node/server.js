@@ -143,4 +143,15 @@ app.post("/api/signup", async (req, res) => {
   }
 });
 
+//cities
+app.get("/api/cities", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM public.city");
+    res.send(result.rows);
+  } catch (error) {
+    res.status(500).send("Error fetching city data");
+    console.error("Error executing query:", error);
+  }
+});
+
 const port = process.env.PORT || 10000;

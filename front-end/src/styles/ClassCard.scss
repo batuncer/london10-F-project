@@ -1,105 +1,137 @@
-$base-padding: 15px;
-$base-size: 14px;
-$primary-color: #4A1380;
-$background-color: white;
-$text-color: black;
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800');
 
-*, *:before, *:after {
-  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+* {
+	box-sizing: border-box;
+}
+
+.blog-slider {
+	width: 80%;
+	margin: auto;
+	background: #9da9ad;
+	box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+	padding: 25px;
+	border-radius: 25px;
+	height: 300px;
+	transition: all 0.3s;
+	margin-top: 50px;
+
+	@media screen and (max-width: 1178px) {
+		max-width: 680px;
+		height: 400px;
+	}
+
+	@media screen and (max-width: 768px) {
+		min-height: 500px;
+		height: auto;
+		margin: 180px auto;
+	}
+
+	@media screen and (max-height: 500px) and (min-width: 992px) {
+		height: 350px;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+
+		@media screen and (max-width: 768px) {
+			flex-direction: column;
+		}
+	}
+
+	.blog-slider__item> :nth-child(2) {
+		margin-left: 30px;
+
+		@media screen and (max-width: 750px) {
+			margin-left: initial;
+		}
+	}
+
+	&__img {
+		position: relative;
+		width: 250px;
+		height: 250px;
+		border-radius: 20px;
+		overflow: hidden;
+		background-image: linear-gradient(147deg, #B4C0D5 0%, #d7263D 74%);
+		box-shadow: 4px 13px 30px 1px rgba(252, 56, 56, 0.2);
+		transform: translateX(-80px);
+
+		&:after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-image: linear-gradient(147deg, #B4C0D5 0%, #d7263D 74%);
+			border-radius: 20px;
+			opacity: 0.8;
+		}
+
+		@media screen and (max-width: 992px) {
+			width: 45%;
+		}
+
+		@media screen and (max-width: 768px) {
+			transform: translateY(-50%);
+			width: 90%;
+		}
+
+		@media screen and (max-width: 576px) {
+			width: 95%;
+		}
+
+		@media screen and (max-height: 500px) and (min-width: 1500px) {
+			height: 270px;
+		}
+
+		.blog-slider__title {
+			position: absolute;
+			bottom: 30px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1;
+			color: white;
+			font-size: 30px;
+		}
+	}
+
+}
+
+.blog-slider__content {
+
+	text-align: left;
+
+
+}
+
+.blog-slider__title {
+	margin-bottom: 10px;
+	font-size: 45px;
+	color: white;
+}
+
+.blog-slider__text {
+	margin-bottom: 10px;
+	font-size: 35px;
+	color: white;
+}
+
+.blog-slider__button {
+	margin-top: 59px;
 }
 
 
 
-.classCard {
-	position: relative;
-	width: 95%;
-	max-height: 345px;
-	overflow: hidden;
-	transition: all 0.3s ease;
-	margin:50px 50px;
-	border-radius: 10px;
-	&.collapsed {
-		max-height: 250px;
-	}
-	.background {
-		img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-			overflow: hidden;
-			filter: blur(70px);
-			position: relative;
-			top: 50%;
-			transform: translateY(-50%);
-		}
-
-	}
-	.content {
-		position: absolute;
-		top: 0;
-		padding: $base-padding;
-		color: $background-color;
-		width: 100%;
-		height: 100%;
-		.row {
-			width: 100%;
-			transition: all 0.3s ease;
-			&.hide {
-			opacity: 0;
-			}
-		}
-		.element {
-			width: 50%;
-			display: inline-block;
-			padding: $base-padding/2;
-		}
-		.sub {
-			padding: 0;
-		}
-		.left {
-			float: left;
-		}
-		.right {
-			float: right;
-			padding-left: $base-padding * 2;
-			top: 0;
-		}
-		.top {
-			border-bottom: thin solid $background-color;
-		}
-		.bar.bottom {
-			position: absolute;
-			bottom: 0;
-			right: 0;
-			cursor: pointer;
-			.sub {
-				padding: $base-padding;
-			}
-		}
-		.seat-circle {
-			position: absolute;
-			border: thin solid $background-color;
-			width: 80px;
-  	  height: 80px;
-			border-radius: 50%;
-			top: $base-padding * 5;
-			right: $base-padding * 2;
-			.count, .unit {
-				display: block;
-				text-align: center;
-				position: absolute;
-			}
-			.count {
-				font-size: 1.2em;
-				margin: 0;
-				top: 20%;
-				left: 42%;
-			}
-			.unit {
-				font-size: 0.9em;
-				top: 55%;
-				left: 27%;
-			}
-		}
-	}
+.circle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	color: white;
+	height: 120px;
+	width: 120px;
+	margin-left: auto;
+	background-image: linear-gradient(147deg, #36454f 0%, #928e85 100%);
 }
