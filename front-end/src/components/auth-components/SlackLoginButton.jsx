@@ -1,18 +1,24 @@
 import { Button } from "@mui/material";
 import Iconify from "../iconify/Iconify";
 
-
-
-
-
-
+const slackClientId = process.env.REACT_APP_SLACK_CLIENT_ID;
 
 export default function SlackLoginButton() {
     //let slack_url = ""
-    const slackClientId = "6209798254180.6224787694115"
+    // const slackClientId = "6209798254180.6224787694115"
+    console.log(slackClientId)
 
-    let slack_url = `https://slack.com/oauth/v2/authorize?scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&identity%3Abasic%2Cusers%3Aread&client_id=${slackClientId}`
+    // const myUrlWithParams = new URL("https://slack.com/oauth/v2/authorize");
 
+    // myUrlWithParams.searchParams.append("scope", "users:read,profile", "identity.email", identity.basic,users.profile:read");
+    // myUrlWithParams.searchParams.append("redirect_url", "https://localhost:443/auth/redirect");
+    // myUrlWithParams.searchParams.append("client_id", slackClientId);
+
+    // console.log(myUrlWithParams.href);
+    // let slack_url = myUrlWithParams.href;
+
+    let slack_url = `https://slack.com/oauth/v2/authorize?scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&identity%3Abasic%2Cusers%3Aread&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&client_id=${slackClientId}`
+    //https://testworkspace-9th7274.slack.com/oauth?client_id=6209798254180.6224787694115&scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&state=&granular_bot_scope=1&single_channel=0&install_redirect=&tracked=1&team=1
 
     function openPopup() {
         const width = 600;
@@ -44,6 +50,7 @@ export default function SlackLoginButton() {
             }
 
             try {
+                console.log(popup.location)
                 if (!popup.location.hostname.includes('slack.com')) {
                     if (popup.location.search) {
                         const query = new URLSearchParams(popup.location.search)
@@ -69,6 +76,7 @@ export default function SlackLoginButton() {
 
     const onSuccess = (code) => {
         console.log(code)
+        sessionStorage.setItem("code", code);
     }
 
     const onFailure = (error) => {
