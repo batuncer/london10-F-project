@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "class-planner-405420",
+  "private_key_id": "b843859e2fe36157def7daf069720376113cf2fb",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDV16PflprqzwPV\nnB8xvl5NA5CREbaf7OPuEnVpfZjco6HCvkOnYcNiPYGA4nte5G77tGgGHZHA2P0i\nD267YHd8RH9jFt+DSgkcgGOmeQW9ysXUbmWuSmTO55BoedqVFBjGznEqgUUZk9cc\ngfapd6ml6PqLRWZK7G+YGzWWfMD1Y4Cm04FcKoLIRUJFfekLnBh54d5ql5c1yJVd\nv1v1P2t8NEptPe5E0eo/yYSbHdPrAm82vBfparnGSAyg6WtEKkq6KKNk5Ve7gDRk\nm37xLnbwcqDh5lFPYm9dn0/BnkpQDmdJN+hx7dIVQ4CaG/VtbG08wRJQAfTxWXiz\nSh7+DbkZAgMBAAECggEAG4MvfnRM1oSvkcY7jeBYF0uBSDuBsL4Ugzb/wS9GFq5n\ngPvkDhR6GVkgIM9tdQN/M0Yo6LnZh04Y9KQMqJycMtzzO3H1bC7/JhoZ+BCeXaae\n4O/FMvE3sBZt52s0urUdDPMBmf42FY4xARDIMKczKKPlcZFfvFMCy+HwTpNwFgIC\nNJR14NDZYMY7kgHI+TTsPUFpD3eEt5QAeOc4BfVVzAaT9T3qN//uT1U5GMHHZTlY\nHoK3UBiScIQJH7CJJVHx4s7VFYntmPySo0O5lS8QkD49u7qPcuCEDshAvZQ+R9E6\nXGCNezA8WuNDmio4q4hcmuR586dQ6a9ta+lr5sMaYwKBgQDzfbiX8UVsEljX7WlN\nBd9DtZc08u2RbpvkeJo6pvF2h6JgIc1wgcIBIUtYNZRlkGVu2oL0jrj85NHq6lkK\nOZ4a916Na0q7l0irkn8CyxrtBGhJ7ZAWPqQWdZVqOs+jetqa/o6ldsLNB3Qnu8yl\nRpGUCJBslzgD4kRD69M2brDHZwKBgQDg0/4mpHuoqwPzMyASRjKMROMBKgskah8F\nmwSBFbXqbegv1lckEp0oCNgpMGdQ0paQhjzl607PX38PBiqAkg/PnVzYPp/iMTdo\nw6spXzONV+9CHMi8xm5BsPq8TmwLAe3YenuKxdedzAtLpfW4732KGa/2G+4W8H+0\naDTFuu+rfwKBgQCWv8yMjbz8ZvOIZB1gqXUMF55REuIQu1la/2wFShyO1PSr7eGi\neUOirXlXWHzS0K5sDm8reD2BnS118rdDxF5ltaddiQLQ154PU3i9QwAdpC/pLWKa\n0xeGLDBgf57USRiVA2tPeBKtG6NHglb2MJWrAA5inND6XpkDMDspJSjfmwKBgHJS\nugCSUSMSWv7Wt28zbM6w1LGp3GKW59Fk4yR0kr1zR8bTehoosOtDnA9Nwqtxeghh\niiPrxHZke+p62y/nlcyfmy+GoKxXFHLcVHPEKiWsWkhG9LgxOq2Cvez0/7GVOImE\ntr95HMvrjq7X5Bw3A6Iur7A4wZe+kWF+P59wECEnAoGAKVRLVePLfwNQ00i3sPYN\nuK+xxtIGzN79dHrSSmO1rdM7poYBesC/lmaelMWbeTs6Tv3zDbOIkR/dphzDy7Ug\n0TNB5a4P1kro1Ys2M+tfTBoshYQJAO9YxFDutISJHBw6HKsI42Kgn2HTKxp9kbi5\ndngrnGS2EMP/slJLtClUzBs=\n-----END PRIVATE KEY-----\n",
+  "client_email": "classplanner@class-planner-405420.iam.gserviceaccount.com",
+  "client_id": "104095427412229676554",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/classplanner%40class-planner-405420.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
