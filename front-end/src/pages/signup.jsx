@@ -28,14 +28,10 @@ export default function SignUp() {
     }
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box>
             <div className={classes.root}>
-                <SignUpForm handleSignup={handleSignup} />
+                <SignUpForm  handleSignup={handleSignup} />
             </div>
-            <div style={{
-                width: "80%",
-                margin: "0 auto", borderTop: "2px solid red", marginTop: "90px"
-            }}></div>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', margin: "50px", marginTop: "90px" }}>
                 <BottomCard h1={"Become a Student"} image={"https://codeyourfuture.io/wp-content/uploads/2022/06/Volunteer-Tech.jpg"} link={"https://codeyourfuture.io/become-a-student/"} />
                 <BottomCard h1={"Volunteer with CodeYourFuture"} image={"https://codeyourfuture.io/wp-content/uploads/2023/11/Volunteer-Coco-v02.jpg"} link={"https://codeyourfuture.io/volunteers/"} />
