@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const { pool } = require("./dbConfig");
+const {calendar} = require("./calendarconfig");
 const http = require("http");
 const fs = require("fs");
 const https = require("https");
@@ -58,7 +59,7 @@ app.get("/auth/redirect", async (req, res) => {
 });
 
 
-https.createServer(options, app).listen(443);
+// https.createServer(options, app).listen(443);
 http.createServer(app).listen(10000);
 
 app.get("/", async (req, res) => {
@@ -71,35 +72,11 @@ app.get("/", async (req, res) => {
   }
 });
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
 
-const SCOPES = [
-"https://www.googleapis.com/auth/calendar",
-// "https://www.googleapis.com/auth/calendar.events",
-];
-
-app.get("/calendar", (req, res) => {
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: SCOPES
-})
-res.redirect(url)
-})
-
-app.get("/calendar/redirect", async (req, res) => {
-  const code = req.query.code;
-  const { tokens } = await oauth2Client.getToken(code);
-  oauth2Client.setCredentials(tokens);
-
-  console.log(code)
-})
-const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+// const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
 app.get("/create-event", async (req, res) => {
+  console.log(calendar)
   let newEvent = {
     summary: "hello world",
     location: "London, UK",
@@ -114,11 +91,11 @@ app.get("/create-event", async (req, res) => {
     requestBody: {
       summary: newEvent.summary,
       location: newEvent.location,
-      attendees: [
-        {
-          email: "jonathanzheng8888@gmail.com",
-        },
-      ],
+      // attendees: [
+      //   {
+      //     email: "jonathanzheng8888@gmail.com",
+      //   },
+      // ],
       colorId: "7",
       start: {
         dateTime: new Date(newEvent.startDateTime),
