@@ -73,8 +73,6 @@ app.get("/", async (req, res) => {
 });
 
 
-// const calendar = google.calendar({ version: "v3", auth: oauth2Client });
-
 app.get("/create-event", async (req, res) => {
   console.log(calendar)
   let newEvent = {
@@ -202,8 +200,8 @@ app.get("/events", async (req, res) => {
 // app.get("/subscribe", async (req, res) => {
 
 // })
-const PORT = process.env.PORT || 3500;
+// const PORT = process.env.PORT || 3500;
 
-app.listen(PORT, () => {
-  console.log("Server is running on port:", PORT)
-})
+// app.listen(PORT, () => {
+//   console.log("Server is running on port:", PORT)
+// })
