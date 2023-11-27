@@ -59,7 +59,7 @@ app.get("/auth/redirect", async (req, res) => {
 });
 
 
-// https.createServer(options, app).listen(443);
+https.createServer(options, app).listen(443);
 http.createServer(app).listen(10000);
 
 app.get("/", async (req, res) => {
@@ -78,8 +78,8 @@ app.get("/create-event", async (req, res) => {
   let newEvent = {
     summary: "hello world",
     location: "London, UK",
-    startDateTime: "2023-11-25T10:00:00",
-    endDateTime: "2023-11-25T17:00:00",
+    startDateTime: "2023-12-02T10:00:00",
+    endDateTime: "2023-12-02T17:00:00",
   };
  
   await calendar.events.insert({
