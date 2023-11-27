@@ -1,162 +1,125 @@
-import React, { useState } from "react";
-import Stack from '@mui/material/Stack';
-import * as Yup from 'yup';
-import { yupResolver } from "@hookform/resolvers/yup"
-import { useForm } from "react-hook-form"
-import FormProvider from "../hooks-form/form-provider";
-import RHFTextField from "../hooks-form/RHFTextField";
-import { Button, IconButton, InputAdornment } from "@mui/material";
-import Iconify from "../iconify/Iconify";
-import RHFSelect from "../hooks-form/RHFSelect";
+import React from "react";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import SlackLoginButton from "./SlackLoginButton";
 
-const SignUp = () => {
-
-    const [showPassword, setShowPassword] = useState(false);
-    const schema = Yup.object().shape({
-        username: Yup.string().max(255, "Max 255").required(),
-        email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-        password: Yup.string().required('Password is required'),
-        password_confirmation: Yup.string()
-            .oneOf([Yup.ref('password'), null], 'Passwords must match'),
-        city: Yup.string().max(255, "Max 255").required(),
-        role: Yup.string().max(255, "Max 255").required()
-
-    })
-
-    // const defaultValues = {
-    //     username: 'baki',
-    //     password: '1234',
-    //     password_confirmation: '',
-    //     email: "baki@gmail.com",
-    //     city: "Istanbul",
-    //     role: "Coordinator"
-
-    // }
-    const CITY_OPTIONS = [
-        { value: '', label: 'Choose Location' }, // Placeholder option.
-        { value: 'London', label: 'London' },
-        { value: 'Glasgow', label: 'Glasgow' },
-        { value: 'SouthAfrica', label: 'South Africa' },
-        { value: 'WestMidlands', label: 'West Midlands' },
-        { value: 'Virtual', label: 'Virtual' },
-    ];
-
-    const ROLE_OPTIONS = [
-        { value: '', label: 'Choose Role' }, // Placeholder option
-        { value: 'Volunteer', label: 'Volunteer' },
-        { value: 'Trainee', label: 'Trainee' },
-    ];
-    /*const LoginSchema = Yup.object().shape({
-        email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-        password: Yup.string().required('Password is required'),
-    });
-Coordinator
-Lead Teacher 1
-Assistant Lead Teacher 5
-Teaching Assistant 6
-Personal Development Rep 2
-
-    const defaultValues = {
-        email: 'testadmin@soms.com',
-        password: '1234',
-    };
-    */
-    const methods = useForm({
-        resolver: yupResolver(schema),
-
-    });
-
-    const {
-        reset,
-        watch,
-        setValue,
-        handleSubmit,
-        getValues,
-        formState: { isSubmitting, isValid },
-    } = methods;
-    /////DAtabase connect ??
-    const onSubmit = async (data) => {
-        try {
-            const response = await fetch("http://localhost:10000/api/signup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                console.log(result.message);
-                // Replace to main page when we created
-            } else {
-                console.error(result.error);
-                // Display an error message to the user
-            }
-        } catch (error) {
-            console.error("Error during signup:", error);
-            // Handle unexpected errors
+const useStyles = makeStyles(theme => ({
+    "@global": {
+        body: {
+            backgroundColor: theme.palette.common.white
         }
-    };
+    },
+    paper: {
+        marginTop: theme.spacing(8),
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main
+    },
+    form: {
+        width: "100%", // Fix IE 11 issue.
+        marginTop: theme.spacing(3)
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2)
+    },
+    customStyle: {
+        backgroundColor: 'rgb(237, 217, 217)',
+        padding: theme.spacing(2),
+        marginRight: "30px",
+        marginTop: "100px",
+    },
+}));
+export default function SignUpForm({ handleSignup }) {
+    const classes = useStyles();
     return (
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-
-            <Stack spacing={2}>
-                <RHFTextField name='username' label='User Name' />
-                <RHFTextField name='email' label='Email' />
-                <RHFTextField
-                    name="password"
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                <RHFTextField
-                    name="password_confirmation"
-                    label="Confirm Password"
-                    type={showPassword ? 'text' : 'password'}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                    <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                <RHFSelect name={"city"} label="Location" variant={"outlined"} InputLabelProps={{ shrink: true }}>
-                    {CITY_OPTIONS.map((category) => (
-                        <option key={category.value} value={category.value} disabled={category.value === ''}>
-                            {category.label}
-                        </option>
-                    ))}
-                </RHFSelect>
-
-                <RHFSelect name={"role"} label="Role" variant={"outlined"} InputLabelProps={{ shrink: true }}>
-                    {ROLE_OPTIONS.map((category) => (
-                        <option key={category.value} value={category.value} disabled={category.value === ''}>
-                            {category.label}
-                        </option>
-                    ))}
-                </RHFSelect>
-
-                <Button type='submit' variant="contained">Sign Up</Button>
-                <Button href={`/login`} >Login</Button>
-
-            </Stack>
-
-        </FormProvider>
-
+        <Container component="main" maxWidth="xs" className={classes.customStyle}>
+            <CssBaseline />
+            <div className={classes.paper}>
+                <Typography component="h1" variant="h4">
+                    Welcome to Our Platform!
+                </Typography>
+                <Typography component="h4" variant="h6">
+                    Explore our courses and upcoming classes.
+                </Typography>
+                <form className={classes.form} noValidate>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                autoComplete="fname"
+                                name="firstName"
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="firstName"
+                                label="First Name"
+                                autoFocus
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="lastName"
+                                label="Last Name"
+                                name="lastName"
+                                autoComplete="lname"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                variant="outlined"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={handleSignup}
+                    >
+                        Sign Up
+                    </Button>
+                    <SlackLoginButton />
+                    <Grid container justify="flex-end">
+                        <Grid item>
+                            <Link href="/login" variant="body2">
+                                Already have an account? Sign in
+                            </Link>
+                        </Grid>
+                    </Grid>
+                </form>
+            </div>
+        </Container>
     )
 }
-
-export default SignUp

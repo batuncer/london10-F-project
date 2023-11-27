@@ -1,30 +1,36 @@
-import { AppBar, Box, Button, IconButton, Toolbar, Typography } from "@mui/material";
-import React from "react";
-import MenuIcon from '@mui/icons-material/Menu';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { /* specific components or styles */ } from '@material-ui/core';
 
 const Header = () => {
-    return (
-        
-<Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            CodeYourFuture
+  return (
+    <div>
+      <AppBar position="static" >
+        <Toolbar style={{ backgroundColor: "white" }}>
+          <img
+            src="https://codeyourfuture.io/wp-content/uploads/2019/03/cyf_brand.png"
+            alt="Code Your Future Logo"
+            style={{ height: '90px', marginRight: '0px', backgroundColor:'#sw7031' }}
+          />
+          <Typography variant="h2"
+            component="div"
+            sx={{
+              flexGrow: 1,
+              color: "black",
+              justifyContent: 'flex-end', 
+              display: 'flex', 
+              fontFamily: "'Arvo', serif",
+              letterSpacing: '-4px', 
+              fontWeight: 'bold' 
+
+            }}>
+            Class Planner
           </Typography>
-          <Button color="inherit">Support</Button>
         </Toolbar>
       </AppBar>
-    </Box>
-    )
+    </div>
+  )
 }
 
-export default Header
+export default Header;
