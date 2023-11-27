@@ -2,16 +2,18 @@ import { Button } from "@mui/material";
 import Iconify from "../iconify/Iconify";
 
 const slackClientId = process.env.REACT_APP_SLACK_CLIENT_ID;
+const backendUrl = process.env.REACT_APP_BACK_END_URL;
 
 export default function SlackLoginButton() {
     //let slack_url = ""
     // const slackClientId = "6209798254180.6224787694115"
     console.log(slackClientId)
 
+
     const myUrlWithParams = new URL("https://slack.com/oauth/v2/authorize");
 
     myUrlWithParams.searchParams.append("user_scope", "identity.basic,identity.email");
-    myUrlWithParams.searchParams.append("redirect_url", `${process.env.BACK_END_URL}/auth/redirect`);
+    myUrlWithParams.searchParams.append("redirect_uri", `${backendUrl}/auth/redirect`);
     myUrlWithParams.searchParams.append("client_id", slackClientId);
 
     console.log(myUrlWithParams.href);
