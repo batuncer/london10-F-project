@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -18,46 +18,61 @@ const MenuProps = {
     },
 };
 
-const names = [
-    'Glasgow',
-    'London',
-    'North West',
-    'South Africa',
-    'West Midlands',
-    'Virtual',
-];
-
 export default function MultipleSelectCheckmarks() {
-    const [personName, setPersonName] = React.useState([]);
+    const [selectedCities, setSelectedCities] = useState([]);
+    const [cityData, setCityData] = useState([]);
+
+    useEffect(() => {
+        // Simulate fetching data from the database
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:10000/api/cities');
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                setCityData(data);
+            } catch (error) {
+                console.error('Error fetching city data:', error.message);
+            }
+        };
+
+        fetchData(); // Call the fetchData function
+
+    }, []); // Empty dependency array ensures the effect runs once when the component mounts
 
     const handleChange = (event) => {
         const {
             target: { value },
         } = event;
-        setPersonName(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
+        setSelectedCities(
+            // On autofill, we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value
         );
     };
 
     return (
         <div>
             <FormControl sx={{ m: 1, width: 300 }}>
-                <InputLabel id="demo-multiple-checkbox-label">City</InputLabel>
+                <InputLabel style={{ color: 'white' }} id="demo-multiple-checkbox-label">
+                    City
+                </InputLabel>
                 <Select
                     labelId="demo-multiple-checkbox-label"
                     id="demo-multiple-checkbox"
                     multiple
-                    value={personName}
+                    value={selectedCities}
                     onChange={handleChange}
-                    input={<OutlinedInput label="Tag" />}
+                    input={<OutlinedInput label="Tag" sx={{ borderColor: 'white' }} />}
                     renderValue={(selected) => selected.join(', ')}
                     MenuProps={MenuProps}
                 >
-                    {names.map((name) => (
-                        <MenuItem key={name} value={name}>
-                            <Checkbox checked={personName.indexOf(name) > -1} />
-                            <ListItemText primary={name} />
+                    {cityData.map((city) => (
+                        <MenuItem key={city.id} value={city.name}>
+                            <Checkbox checked={selectedCities.indexOf(city.name) > -1} />
+                            <ListItemText primary={city.name} />
                         </MenuItem>
                     ))}
                 </Select>

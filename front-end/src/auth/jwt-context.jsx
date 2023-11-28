@@ -9,6 +9,7 @@ const TYPE_INITIALIZE = "INITIALIZE"
 const TYPE_LOGIN = "LOGIN"
 const TYPE_REGISTER = "REGISTER"
 const TYPE_LOGOUT = "LOGOUT"
+const TYPE_SUCCESS_REGISTER = "SUCESS_REGISTER"
 
 const initialState = {
     isInitialized: false,
@@ -83,7 +84,7 @@ export function AuthProvider({ children }) {
 
                 const user = {}
                 dispatch({
-                    type: Types.INITIAL,
+                    type: TYPE_INITIALIZE,
                     payload: {
                         isAuthenticated: true,
                         user,
@@ -92,7 +93,7 @@ export function AuthProvider({ children }) {
             }
             else {
                 dispatch({
-                    type: Types.INITIAL,
+                    type: TYPE_INITIALIZE,
                     payload: {
                         isAuthenticated: false,
                         user: null,
@@ -103,7 +104,7 @@ export function AuthProvider({ children }) {
         } catch (error) {
             console.error(error);
             dispatch({
-                type: Types.INITIAL,
+                type: TYPE_INITIALIZE,
                 payload: {
                     isAuthenticated: false,
                     user: null,
@@ -125,9 +126,9 @@ export function AuthProvider({ children }) {
     // LOGIN
     const loginWithSlack = async (token) => {
         const user = {}
-        setSession(access);
+        setSession(token);
         dispatch({
-            type: Types.LOGIN,
+            type: TYPE_LOGIN,
             payload: {
                 user: user,
             },
@@ -142,7 +143,7 @@ export function AuthProvider({ children }) {
             password,
             first_name,
             last_name,
-            city,
+            location,
             role
         });
 
@@ -156,7 +157,7 @@ export function AuthProvider({ children }) {
         //setUserSession(data);
         setSession(token);
         dispatch({
-            type: Types.SUCCESS_REGISTER,
+            type: TYPE_SUCCESS_REGISTER,
 
         });
     };
@@ -167,7 +168,7 @@ export function AuthProvider({ children }) {
     const logout = async () => {
         setSession(null);
         dispatch({
-            type: Types.LOGOUT,
+            type: TYPE_LOGOUT,
         });
     };
 

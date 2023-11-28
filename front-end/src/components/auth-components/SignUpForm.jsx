@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
         marginTop: "100px",
     },
 }));
-export default function SignUpForm({ handleSignup }) {
+export default function SignUpForm({ handleSignup, handleSlackSignup }) {
     const classes = useStyles();
     return (
         <Container component="main" maxWidth="xs" className={classes.customStyle}>
@@ -111,7 +111,9 @@ export default function SignUpForm({ handleSignup }) {
                     >
                         Sign Up
                     </Button>
-                    <SlackLoginButton />
+                    <SlackLoginButton onLoged={handleSlackSignup} onError={(error) => {
+                        alert(error)
+                    }} />
                     <Grid container justify="flex-end">
                         <Grid item>
                             <Link href="/login" variant="body2">
