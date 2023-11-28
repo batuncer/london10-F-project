@@ -30,7 +30,8 @@ CREATE TABLE session (
     time_start TIMESTAMP,
     time_end TIMESTAMP,
     event_type VARCHAR(250),
-    location VARCHAR(250)
+    location VARCHAR(250),
+    cohort VARCHAR(100)
 );
 
 CREATE TABLE attendance (
