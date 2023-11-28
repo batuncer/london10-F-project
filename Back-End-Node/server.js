@@ -15,8 +15,6 @@ app.use(cors());
 app.use(express.json());
 require("dotenv").config();
 
-
-
 const client_id = process.env.VITE_SLACK_CLIENT_ID;
 const client_secret = process.env.SLACK_CLIENT_SECRET;
 const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
@@ -62,7 +60,7 @@ app.get("/auth/redirect", async (req, res) => {
       "SELECT * FROM public.user WHERE email = $1",
       [userIdentity["user"]["email"]]
     );
-    let jwtToken = ""; 
+    let jwtToken = "";
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
@@ -94,6 +92,7 @@ app.get("/auth/redirect", async (req, res) => {
 });
 
 if (process.env.LOCAL_DEVELOPMENT) {
+  console.log("LOCAL_DEVELOPMENT");
   // Slack requires https for OAuth, but locally we want to use http
   // to avoid having to maintain our own certificates
   const options = {
@@ -103,7 +102,13 @@ if (process.env.LOCAL_DEVELOPMENT) {
   https.createServer(options, app).listen(443);
   http.createServer(app).listen(10000);
 } else {
+  console.log("PRODUCT");
   // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
+  const options = {
+    key: fs.readFileSync("client-key.pem"),
+    cert: fs.readFileSync("client-cert.pem"),
+  };
+  https.createServer(options, app).listen(443);
   http.createServer(app).listen(10000);
 }
 
@@ -114,43 +119,6 @@ app.get("/", async (req, res) => {
   } catch (error) {
     res.status(500).send("Error inserting data");
     console.error("Error executing query:", error);
-  }
-});
-
-////sign up
-app.post("/api/signup", async (req, res) => {
-  try {
-    const { first_name, last_name, email, password, city, role } = req.body;
-
-    // Check if the user already exists
-    const existingUser = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return res
-        .status(400)
-        .json({ error: "User with this email already exists." });
-    }
-
-    // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Insert the new user into the database
-    const insertResult = await pool.query(
-      "INSERT INTO public.user (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-      [first_name, last_name, email, hashedPassword, city, role]
-    );
-    const jwtToken = createToken(insertResult.rows[0]["id"]);
-
-    res
-      .status(201)
-      .json({ message: "User registered successfully.", token: jwtToken });
-  } catch (error) {
-    console.error("Error during user registration:", error);
-    res.status(500).json({ error: "Something went wrong." });
   }
 });
 
@@ -166,3 +134,40 @@ app.get("/api/cities", async (req, res) => {
 });
 
 const port = process.env.PORT || 10000;
+
+////sign up
+// app.post("/api/signup", async (req, res) => {
+//   try {
+//     const { first_name, last_name, email, password, city, role } = req.body;
+
+//     // Check if the user already exists
+//     const existingUser = await pool.query(
+//       "SELECT * FROM users WHERE email = $1",
+//       [email]
+//     );
+
+//     if (existingUser.rows.length > 0) {
+//       return res
+//         .status(400)
+//         .json({ error: "User with this email already exists." });
+//     }
+
+//     // Hash the password
+//     const saltRounds = 10;
+//     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+//     // Insert the new user into the database
+//     const insertResult = await pool.query(
+//       "INSERT INTO public.user (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+//       [first_name, last_name, email, hashedPassword, city, role]
+//     );
+//     const jwtToken = createToken(insertResult.rows[0]["id"]);
+
+//     res
+//       .status(201)
+//       .json({ message: "User registered successfully.", token: jwtToken });
+//   } catch (error) {
+//     console.error("Error during user registration:", error);
+//     res.status(500).json({ error: "Something went wrong." });
+//   }
+// });

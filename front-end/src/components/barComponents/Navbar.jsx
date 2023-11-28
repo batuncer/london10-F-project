@@ -13,7 +13,9 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import NavbarFilter from "./NavbarFilter"
+import NavbarFilter from "./NavbarFilter";
+import LogoutIcon from '@mui/icons-material/Logout';
+
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -78,6 +80,10 @@ export default function Navbar() {
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        window.location.reload();
+    };
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
@@ -98,6 +104,7 @@ export default function Navbar() {
         >
             <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
             <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+
         </Menu>
     );
 
@@ -202,6 +209,9 @@ export default function Navbar() {
                             <MoreIcon />
                         </IconButton>
                     </Box>
+                    <IconButton color="inherit" onClick={handleLogout}>
+                        <LogoutIcon />
+                    </IconButton>
                 </Toolbar>
             </AppBar>
             {renderMobileMenu}
