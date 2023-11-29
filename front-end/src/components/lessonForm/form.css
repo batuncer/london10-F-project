@@ -3,6 +3,11 @@
     --light-grey: #ebedf0;
 }
 
+h2 {
+    border-bottom: 2px solid var(--red-colour);
+    margin: 1em 0em 2em 0em;
+}
+
 /* .editable_field {
     width: 300px;
 } */
@@ -55,6 +60,12 @@ input, select {
     width: 20em;
     color: gray;
     font-size: calc(10px + 1vmin);
+}
+
+.timepicker {
+    width: 9em;
+    margin-left: 7px;
+    font-size: calc(8px + 1vmin);
 }
 
 button {

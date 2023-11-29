@@ -23,6 +23,7 @@ export default function LessonForm() {
   return (
     <div className="formDiv">
       <form onSubmit={submitForm}>
+        <h2>Lesson Content</h2>
         <label className="form-label">
           {" "}
           Module №<br></br>
