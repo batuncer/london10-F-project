@@ -1,0 +1,73 @@
+:root {
+    --red-colour: rgb(237,67,67);
+    --light-grey: #ebedf0;
+}
+
+/* .editable_field {
+    width: 300px;
+} */
+
+.formDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.general-form-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+    margin: 2em;
+
+}
+
+.form-container {
+    border: 3px solid var(--red-colour);
+    border-radius: 10px;
+    padding: 2em 0.5em 2em 0.5em;
+}
+
+.form-label {
+    font-size: calc(12px + 1vmin);
+   
+}
+
+.input-line {
+    display: flex;
+    justify-items: center;
+}
+
+input, select {
+    border: 3px solid var(--light-grey);
+    border-radius: 5px;
+    height: fit-content;
+    padding: 5px;
+    margin-right: 10px;
+    background-color: white;
+    width: 20em;
+    color: gray;
+    font-size: calc(10px + 1vmin);
+}
+
+button {
+    border: 3px solid var(--red-colour);
+    padding: 8px;
+    border-radius: 5px;
+    
+}
+
+.plusButton {
+    border: 1.5px solid var(--red-colour);
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 0.5em;
+}
+
