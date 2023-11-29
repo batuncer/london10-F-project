@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(3, 0, 2)
     },
     customStyle: {
-        backgroundColor: 'rgb(237, 217, 217)',
+        backgroundColor: 'rgb(255, 255, 255)',
         padding: theme.spacing(2),
         marginRight: "30px",
         marginTop: "100px",

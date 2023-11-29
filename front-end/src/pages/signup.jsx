@@ -32,7 +32,8 @@ export default function SignUp() {
             <div className={classes.root}>
                 <SignUpForm  handleSignup={handleSignup} />
             </div>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', margin: "50px", marginTop: "90px" }}>
+            <div style={{border: "1px solid red", marginTop: "100px", marginRight: "120px", marginLeft: "120px"}}></div>
+            <div style={{ display: 'flex', gap: '66px', justifyContent: 'center', margin: "190px", marginTop: "90px" }}>
                 <BottomCard h1={"Become a Student"} image={"https://codeyourfuture.io/wp-content/uploads/2022/06/Volunteer-Tech.jpg"} link={"https://codeyourfuture.io/become-a-student/"} />
                 <BottomCard h1={"Volunteer with CodeYourFuture"} image={"https://codeyourfuture.io/wp-content/uploads/2023/11/Volunteer-Coco-v02.jpg"} link={"https://codeyourfuture.io/volunteers/"} />
                 <BottomCard h1={"Hire a Graduate"} image={"https://codeyourfuture.io/wp-content/uploads/2023/06/Volunteer-Employability-1.png"} link={"https://codeyourfuture.io/hire-a-graduate/"} />

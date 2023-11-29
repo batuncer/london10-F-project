@@ -28,8 +28,8 @@ const ClassCard = (props) => {
                 </div>
                 <div className="blog-slider__content">
                     <div className="blog-slider__title">{props.module_name}</div>
-                    <div className="blog-slider__text">Technical Education</div>
-                    <div className="blog-slider__text">{props.time_start.substring(0, 5)} - {props.time_end.substring(0, 5)}</div>
+                    <div className="blog-slider__text"></div>
+                    <div className="blog-slider__text"></div>
                     <Button
                         variant="primary"
                         onClick={handleButtonClick}
@@ -48,15 +48,24 @@ const ClassCard = (props) => {
                             <Modal.Title>ATTENDANCES</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            Baki Anna and Saim will join the class.
+                            <b>Who is leading: </b>
+                            {props.who_leading}
                         </Modal.Body>
                         <Modal.Body>
-                            Baki Anna and Saim will join the class.
+                            Attendances
                         </Modal.Body>
                     </Modal>
+                <div>
+                    {props.city} / {props.cohort}
                 </div>
-                <div className="circle">
-                    <p>WEEK 1</p>
+                <div>
+                    {props.location}
+                </div>
+                </div>
+
+                <div className="circle blog-slider__title">
+                    <p>Week</p>
+                    <p>{props.module_week}</p>
                 </div>
             </div>
         </div>

@@ -28,7 +28,6 @@ const Main = () => {
                 const response = await fetch(url);
                 const result = await response.json(); 
                 setData(result);
-                console.log(result[0].date.substring(0, 4)); 
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -48,7 +47,13 @@ const Main = () => {
                     date={s.date}
                     time_start={s.time_start}
                     time_end={s.time_end}
+                    who_leading={s.who_leading}
+                    cohort={s.cohort}
+                    city={s.city}
+                    location={s.location}
                     module_name={s.module_name}
+                    module_week={s.module_week}
+                    syllabus_link={s.syllabus_link}
                 />
             ))}
         </div>
