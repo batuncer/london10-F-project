@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const url = `${process.env.REACT_APP_BASE_URL}/session`
+const url = `https://classplanner-server-g7rnlwq2t-saims-projects-b4692b5b.vercel.app/session`
 
 const Main = () => {
     const classes = useStyles();
