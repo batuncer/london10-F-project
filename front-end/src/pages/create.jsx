@@ -1,4 +1,5 @@
 import LessonForm from "../components/lessonForm/lessonfrom";
+import SessionForm from "../components/lessonForm/sessionform";
 
 const Create = () => {
   
@@ -9,7 +10,7 @@ const Create = () => {
         <LessonForm />
       </div>
       <div className="form-container">
-
+        <SessionForm />
       </div>
     </div>
   );

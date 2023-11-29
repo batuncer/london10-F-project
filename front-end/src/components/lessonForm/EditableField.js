@@ -19,10 +19,6 @@ const EditableField = ({ options }, name, type) => {
     setSelectedOption(e.target.value);
   };
 
-  const handleBlur = () => {
-    setInputVisible(false);
-  };
-
   return (
     <div className="input-line">
       {isInputVisible ? (
@@ -31,7 +27,6 @@ const EditableField = ({ options }, name, type) => {
           name={name}
           value={inputValue}
           onChange={handleInputChange}
-          onBlur={handleBlur}
           autoFocus
         />
       ) : (
@@ -39,7 +34,6 @@ const EditableField = ({ options }, name, type) => {
           className="editable_field"
           value={selectedOption}
           onChange={handleSelectChange}
-          onDoubleClick={handleDoubleClick}
         >
           <option
             value=""
