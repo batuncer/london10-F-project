@@ -93,7 +93,7 @@ app.get("/auth/redirect", async (req, res) => {
   }
 });
 
-
+if (process.env.LOCAL_DEVELOPMENT) {
   // Slack requires https for OAuth, but locally we want to use http
   // to avoid having to maintain our own certificates
   const options = {
