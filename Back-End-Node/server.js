@@ -93,24 +93,19 @@ app.get("/auth/redirect", async (req, res) => {
   }
 });
 
+const options = {
+  key: fs.readFileSync(`${process.cwd()}/client-key.pem`),
+  cert: fs.readFileSync(`${process.cwd()}/client-cert.pem`),
+};
 if (process.env.LOCAL_DEVELOPMENT) {
   // Slack requires https for OAuth, but locally we want to use http
   // to avoid having to maintain our own certificates
-  const options = {
-    key: fs.readFileSync("client-key.pem"),
-    cert: fs.readFileSync("client-cert.pem"),
-  };
   https.createServer(options, app).listen(443);
   http.createServer(app).listen(10000);
 } else {
+  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
   console.log("PRODUCT");
-  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
-  const options = {
-    key: fs.readFileSync("client-key.pem"),
-    cert: fs.readFileSync("client-cert.pem"),
-  };
   https.createServer(options, app).listen(443);
-  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
 }
 
 
