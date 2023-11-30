@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Navbar from "../components/barComponents/Navbar";
 import { makeStyles } from '@mui/styles';
 import ClassCard from "../components/classes/ClassCard";
+import UserGuard from "../auth/UserGuard";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,6 +39,8 @@ const Main = () => {
     
 
     return (
+
+      <UserGuard>
         <div className="main-container">
              <Navbar />
             {data.map((s) => (
@@ -57,6 +60,7 @@ const Main = () => {
                 />
             ))}
         </div>
+    </UserGuard>
     );
 };
 

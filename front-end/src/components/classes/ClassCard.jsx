@@ -38,7 +38,9 @@ const ClassCard = (props) => {
                             padding: '15px 35px',
                             borderRadius: '50px',
                             color: '#fff',
+
                             border: 'none', 
+
                         }}
                     >
                         SEE ATTENDANCES
