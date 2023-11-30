@@ -105,27 +105,62 @@ app.get("/auth/redirect", async (req, res) => {
   }
 });
 
+const options = {
+  key: fs.readFileSync(`${__dirname}/client-key.pem`),
+  cert: fs.readFileSync(`${__dirname}/client-cert.pem`),
+};
 if (process.env.LOCAL_DEVELOPMENT) {
   // Slack requires https for OAuth, but locally we want to use http
   // to avoid having to maintain our own certificates
-  const options = {
-    key: fs.readFileSync("client-key.pem"),
-    cert: fs.readFileSync("client-cert.pem"),
-  };
   https.createServer(options, app).listen(443);
   http.createServer(app).listen(10000);
 } else {
+  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
   console.log("PRODUCT");
-  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
-  const options = {
-    key: fs.readFileSync("client-key.pem"),
-    cert: fs.readFileSync("client-cert.pem"),
-  };
-  https.createServer(options, app).listen(443);
-  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
+  https.createServer(options, app).listen(10000);
 }
 
-const port = process.env.PORT || 10000;
+
+
+////sign up
+// app.post("/api/signup", async (req, res) => {
+//   try {
+//     const { first_name, last_name, email, password, city, role } = req.body;
+
+//     // Check if the user already exists
+//     const existingUser = await pool.query(
+//       "SELECT * FROM users WHERE email = $1",
+//       [email]
+//     );
+
+//     if (existingUser.rows.length > 0) {
+//       return res
+//         .status(400)
+//         .json({ error: "User with this email already exists." });
+//     }
+
+//     // Hash the password
+//     const saltRounds = 10;
+//     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+//     // Insert the new user into the database
+//     const insertResult = await pool.query(
+//       "INSERT INTO public.user (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+//       [first_name, last_name, email, hashedPassword, city, role]
+//     );
+//     const jwtToken = createToken(insertResult.rows[0]["id"]);
+
+//     res
+//       .status(201)
+//       .json({ message: "User registered successfully.", token: jwtToken });
+//   } catch (error) {
+//     console.error("Error during user registration:", error);
+//     res.status(500).json({ error: "Something went wrong." });
+//   }
+// });
+
+
+
 
 //cities
 app.get("/api/cities", async (req, res) => {
@@ -260,6 +295,7 @@ app.get("/events", async (req, res) => {
 //   );
 // });
 
+
 //Profile endpoint
 app.get("/api/profile", verifyToken, async (req, res) => {
   try {
@@ -328,3 +364,103 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
     res.status(500).json({ error: "Something went wrong." });
   }
 });
+
+//session table
+app.get("/session", async (req, res) => {
+   try {
+    const result = await pool.query("SELECT * FROM public.session");
+    res.send(result.rows);
+  } catch (error) {
+    res.status(500).send("Error fetching session data");
+    console.error("Error executing query:", error);
+  } 
+});
+
+
+// fixes "No exports found in module" error
+// https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
+export default app;
+
+//Profile endpoint
+app.get("/api/profile", verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Fetch user profile details from the database
+    const userProfile = await pool.query(
+      "SELECT * FROM public.user WHERE id = $1",
+      [userId]
+    );
+
+    if (userProfile.rows.length === 0) {
+      // User not found
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Respond with the user's profile details
+    res.status(200).json({
+      id: userProfile.rows[0].id,
+      first_name: userProfile.rows[0].first_name,
+      last_name: userProfile.rows[0].last_name,
+      email: userProfile.rows[0].email,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+app.get("/api/signup-details", verifyToken, async (req, res) => {
+  try {
+    const signUpDetails = await getSignUpDetailsFromDatabase();
+    res.json(signUpDetails);
+  } catch (error) {
+    console.error("Error fetching sign-up details:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+// Delete by id from signup classes
+app.get("/api/cancel-signup/:classId", verifyToken, async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const userId = req.userId;
+
+    await cancelSignUp(classId, userId);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error canceling sign-up:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+app.post("/api/insert-signup", verifyToken, async (req, res) => {
+  try {
+    const sessionId = req.body.sessionId;
+    const userId = req.userId;
+    const period = req.body.period;
+    const role = req.body.role;
+
+    await insertSignUp(sessionId, role, userId, period);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error insert sign-up:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+//session table
+app.get("/session", async (req, res) => {
+   try {
+    const result = await pool.query("SELECT * FROM public.session");
+    res.send(result.rows);
+  } catch (error) {
+    res.status(500).send("Error fetching session data");
+    console.error("Error executing query:", error);
+  } 
+});
+
+
+// fixes "No exports found in module" error
+// https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
+export default app;
