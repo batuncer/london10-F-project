@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import "../../styles/ClassCard.scss";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const ClassCard = () => {
+const ClassCard = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleButtonClick = () => {
@@ -18,17 +18,18 @@ const ClassCard = () => {
         <div className="blog-slider">
             <div className="blog-slider__item">
                 <div className="blog-slider__img">
-                    <img src="https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759871/jason-leung-798979-unsplash.webp" alt="Date Image" />
+                    <img src="https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759871/jason-leung-798979-unsplash.webp" alt="Date pic" />
                     <div className='blog-slider__title'>
-                        <p>25</p>
-                        <p>November</p>
-                        <p>2023</p>
+                        <p>{props.date.substring(8, 10)}</p>
+                        <p>{props.date.substring(5, 7)}</p>
+                        <p>{props.date.substring(0, 4)}</p>
+                        <p style={{ fontSize: "14px" }}>{props.time_start.substring(0, 5)} - {props.time_end.substring(0, 5)}</p>
                     </div>
                 </div>
                 <div className="blog-slider__content">
-                    <div className="blog-slider__title">Employability Module 3</div>
-                    <div className="blog-slider__text">Technical Education</div>
-                    <div className="blog-slider__text">10:00 - 16:30</div>
+                    <div className="blog-slider__title">{props.module_name}</div>
+                    <div className="blog-slider__text"></div>
+                    <div className="blog-slider__text"></div>
                     <Button
                         variant="primary"
                         onClick={handleButtonClick}
@@ -49,19 +50,28 @@ const ClassCard = () => {
                             <Modal.Title>ATTENDANCES</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            Baki Anna and Saim will join the class.
+                            <b>Who is leading: </b>
+                            {props.who_leading}
                         </Modal.Body>
                         <Modal.Body>
-                            Baki Anna and Saim will join the class.
+                            Attendances
                         </Modal.Body>
                     </Modal>
+                <div>
+                    {props.city} / {props.cohort}
                 </div>
-                <div className="circle">
-                    <p>WEEK 1</p>
+                <div>
+                    {props.location}
+                </div>
+                </div>
+
+                <div className="circle blog-slider__title">
+                    <p>Week</p>
+                    <p>{props.module_week}</p>
                 </div>
             </div>
         </div>
     );
 };
-
+//changes done here
 export default ClassCard;

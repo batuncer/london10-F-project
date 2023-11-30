@@ -35,6 +35,7 @@ export default function SignUp() {
     }
 
     return (
+
         <LoginGuard>
             <Box sx={{ flexGrow: 1 }}>
                 <div className={classes.root}>
