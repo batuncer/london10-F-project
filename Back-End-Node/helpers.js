@@ -5,7 +5,7 @@ const getSignUpDetailsFromDatabase = async (userId) => {
   try {
    
 
-    // Query to select all sign-up details from the table
+    // Query to select all sign-up details with id from the table
     const query =  "SELECT * FROM public.attandence WHERE id = $1";
 
     // Execute the query

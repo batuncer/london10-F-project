@@ -234,7 +234,7 @@ app.get("/events", async (req, res) => {
       console.log(`${start} - ${event.summary}`);
     });
 
-    res.status(200).json(events); // Or return these events in the response
+    res.status(200).json(events);
   } catch (error) {
     console.error("Error fetching events:", error);
     res.status(500).send("Error fetching events");
