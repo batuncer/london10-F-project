@@ -1,23 +1,23 @@
 const express = require("express");
 const app = express();
 const { pool } = require("./dbConfig");
-const {calendar} = require("./calendarconfig");
+const { calendar } = require("./calendarconfig");
 const http = require("http");
 const fs = require("fs");
 const https = require("https");
 const { WebClient } = require("@slack/web-api");
 const cors = require("cors");
-const {google} = require("googleapis");
+const { google } = require("googleapis");
 const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
 const backendUrl = process.env.BACK_END_URL;
+const verifyToken = require("./verifyToken");
 
 const {
   getSignUpDetailsFromDatabase,
   cancelSignUp,
   insertSignUp,
 } = require("./helpers.js");
-
 
 app.use(cors());
 app.use(express.json());
@@ -29,7 +29,7 @@ const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
 
 const client = new WebClient();
 
-const createToken = (userId,role) => {
+const createToken = (userId, role) => {
   const token = jwt.sign({ id: userId, roles: role }, secret, {
     expiresIn: 86400, // expires in 24 hours
   });
@@ -38,7 +38,7 @@ const createToken = (userId,role) => {
 };
 
 app.get("/auth/redirect", async (req, res) => {
- try {
+  try {
     const { code } = req.query;
 
     // Exchange the code for an OAuth token
@@ -72,7 +72,10 @@ app.get("/auth/redirect", async (req, res) => {
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
-      jwtToken = createToken(existingUser.rows[0]["id"],existingUser.rows[0]["default_role"]);
+      jwtToken = createToken(
+        existingUser.rows[0]["id"],
+        existingUser.rows[0]["default_role"]
+      );
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
@@ -122,48 +125,7 @@ if (process.env.LOCAL_DEVELOPMENT) {
   // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
 }
 
-
-
 const port = process.env.PORT || 10000;
-
-////sign up
-// app.post("/api/signup", async (req, res) => {
-//   try {
-//     const { first_name, last_name, email, password, city, role } = req.body;
-
-//     // Check if the user already exists
-//     const existingUser = await pool.query(
-//       "SELECT * FROM users WHERE email = $1",
-//       [email]
-//     );
-
-//     if (existingUser.rows.length > 0) {
-//       return res
-//         .status(400)
-//         .json({ error: "User with this email already exists." });
-//     }
-
-//     // Hash the password
-//     const saltRounds = 10;
-//     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-//     // Insert the new user into the database
-//     const insertResult = await pool.query(
-//       "INSERT INTO public.user (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-//       [first_name, last_name, email, hashedPassword, city, role]
-//     );
-//     const jwtToken = createToken(insertResult.rows[0]["id"]);
-
-//     res
-//       .status(201)
-//       .json({ message: "User registered successfully.", token: jwtToken });
-//   } catch (error) {
-//     console.error("Error during user registration:", error);
-//     res.status(500).json({ error: "Something went wrong." });
-//   }
-// });
-
-
 
 //cities
 app.get("/api/cities", async (req, res) => {
@@ -177,14 +139,14 @@ app.get("/api/cities", async (req, res) => {
 });
 
 app.get("/create-event", async (req, res) => {
-  console.log(calendar)
+  console.log(calendar);
   let newEvent = {
     summary: "hello world",
     location: "London, UK",
     startDateTime: "2023-12-02T10:00:00",
     endDateTime: "2023-12-02T17:00:00",
   };
- 
+
   await calendar.events.insert({
     // auth: oauth2Client,
     calendarId:
@@ -207,8 +169,8 @@ app.get("/create-event", async (req, res) => {
     },
   });
 
-  res.send("at least something")
-})
+  res.send("at least something");
+});
 
 app.get("/events", async (req, res) => {
   try {
@@ -240,7 +202,6 @@ app.get("/events", async (req, res) => {
     res.status(500).send("Error fetching events");
   }
 });
-
 
 //fetching only saturdays events
 // const currentDate = new Date();
@@ -299,9 +260,8 @@ app.get("/events", async (req, res) => {
 //   );
 // });
 
-
 //Profile endpoint
-app.get("/api/profile",verifyToken, async (req, res) => {
+app.get("/api/profile", verifyToken, async (req, res) => {
   try {
     const userId = req.userId;
 
@@ -329,9 +289,7 @@ app.get("/api/profile",verifyToken, async (req, res) => {
   }
 });
 
-
-
-app.get("/api/signup-details",verifyToken, async (req, res) => {
+app.get("/api/signup-details", verifyToken, async (req, res) => {
   try {
     const signUpDetails = await getSignUpDetailsFromDatabase();
     res.json(signUpDetails);
@@ -342,9 +300,9 @@ app.get("/api/signup-details",verifyToken, async (req, res) => {
 });
 
 // Delete by id from signup classes
-app.get("/api/cancel-signup/:classId",verifyToken, async (req, res) => {
+app.get("/api/cancel-signup/:classId", verifyToken, async (req, res) => {
   try {
-    const classId = req.params.classId; 
+    const classId = req.params.classId;
     const userId = req.userId;
 
     await cancelSignUp(classId, userId);
@@ -356,18 +314,17 @@ app.get("/api/cancel-signup/:classId",verifyToken, async (req, res) => {
   }
 });
 
-
 app.post("/api/insert-signup", verifyToken, async (req, res) => {
   try {
-      const sessionId = req.body.sessionId;
-      const userId = req.userId;
-      const period = req.body.period;
-      const role =req.body.role;
+    const sessionId = req.body.sessionId;
+    const userId = req.userId;
+    const period = req.body.period;
+    const role = req.body.role;
 
-      await insertSignUp(sessionId, role, userId, period);
-  res.json({ success: true });
-  }catch(error){
+    await insertSignUp(sessionId, role, userId, period);
+    res.json({ success: true });
+  } catch (error) {
     console.error("Error insert sign-up:", error);
     res.status(500).json({ error: "Something went wrong." });
   }
-})
+});

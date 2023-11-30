@@ -1,5 +1,21 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .App {
+  flex: auto; /* Change from flex: 1; to flex: auto; */
   text-align: center;
+  /* Space for the footer */
 }
 
 .footer {
@@ -7,16 +23,21 @@
   bottom: 0;
   width: 100%;
   text-align: center;
+  background-color: #36454f;
+  padding: 20px;
+  color: white;
+  margin-top: 20px;
+ 
 }
 
 .footer-link {
-  color: rgb(237,67,67);
+  color: white;
 }
 
 @media only screen and (max-width: 600px) {
- .footer {
-  font-size: calc(8px + 1vmin);
- }
+  .footer {
+    font-size: calc(8px + 1vmin);
+  }
 }
 
 .App-header {
@@ -36,5 +57,3 @@
 .App-link {
   color: #61dafb;
 }
-
-

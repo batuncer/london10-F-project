@@ -10,7 +10,7 @@ export default function UserGuard({ children }) {
         return children
     }
     if (!isAuthenticated) {
-        navigate("/")
+        navigate("/")                                                                                                                                                                                                                                                                                                                           
     }
     return children
 

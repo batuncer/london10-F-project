@@ -4,6 +4,7 @@ import Main from "../pages/main";
 import SignUp from "../pages/signup";
 import Login from "../pages/login";
 import Admin from "../pages/Admin"
+import Profile from "../pages/profil";
 
 // const login = ({params}) => {
 //   console.log(params);
@@ -19,10 +20,11 @@ const MainRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<SignUp />} />
-      <Route path="/main" element={<Main />}/>
-      <Route path='/login' element={<Login />}/>
-      <Route path='/admin' element={<Admin />} />
-      {/* <Route path='/oauthdone' element={<login />}/> */}
+      <Route path="/main" element={<Main />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/admin" element={<Admin />} />
+      {/* Correct the path for the profile route */}
+      <Route path="/profile" element={<Profile />} />
     </Routes>
   );
 };
