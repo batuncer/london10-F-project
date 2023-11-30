@@ -8,10 +8,16 @@ const https = require("https");
 const { WebClient } = require("@slack/web-api");
 const cors = require("cors");
 const {google} = require("googleapis");
-const { Console } = require("console");
 const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
 const backendUrl = process.env.BACK_END_URL;
+
+const {
+  getSignUpDetailsFromDatabase,
+  cancelSignUp,
+  insertSignUp,
+} = require("./helpers.js");
+
 
 app.use(cors());
 app.use(express.json());
@@ -23,8 +29,8 @@ const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
 
 const client = new WebClient();
 
-const createToken = (userId) => {
-  const token = jwt.sign({ id: userId, roles: [`student`] }, secret, {
+const createToken = (userId,role) => {
+  const token = jwt.sign({ id: userId, roles: role }, secret, {
     expiresIn: 86400, // expires in 24 hours
   });
 
@@ -66,7 +72,7 @@ app.get("/auth/redirect", async (req, res) => {
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
-      jwtToken = createToken(existingUser.rows[0]["id"]);
+      jwtToken = createToken(existingUser.rows[0]["id"],existingUser.rows[0]["default_role"]);
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
@@ -83,7 +89,10 @@ app.get("/auth/redirect", async (req, res) => {
       );
 
       //login bussiness
-      jwtToken = createToken(insertResult.rows[0]["id"]);
+      jwtToken = createToken(
+        insertResult.rows[0]["id"],
+        insertResult.rows[0]["default_role"]
+      );
     }
 
     res.redirect(`${backendUrl}/oauthdone?code=${jwtToken}`);
@@ -290,3 +299,75 @@ app.get("/events", async (req, res) => {
 //   );
 // });
 
+
+//Profile endpoint
+app.get("/api/profile",verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    // Fetch user profile details from the database
+    const userProfile = await pool.query(
+      "SELECT * FROM public.user WHERE id = $1",
+      [userId]
+    );
+
+    if (userProfile.rows.length === 0) {
+      // User not found
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Respond with the user's profile details
+    res.status(200).json({
+      id: userProfile.rows[0].id,
+      first_name: userProfile.rows[0].first_name,
+      last_name: userProfile.rows[0].last_name,
+      email: userProfile.rows[0].email,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+
+
+app.get("/api/signup-details",verifyToken, async (req, res) => {
+  try {
+    const signUpDetails = await getSignUpDetailsFromDatabase();
+    res.json(signUpDetails);
+  } catch (error) {
+    console.error("Error fetching sign-up details:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+// Delete by id from signup classes
+app.get("/api/cancel-signup/:classId",verifyToken, async (req, res) => {
+  try {
+    const classId = req.params.classId; 
+    const userId = req.userId;
+
+    await cancelSignUp(classId, userId);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error canceling sign-up:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+
+app.post("/api/insert-signup", verifyToken, async (req, res) => {
+  try {
+      const sessionId = req.body.sessionId;
+      const userId = req.userId;
+      const period = req.body.period;
+      const role =req.body.role;
+
+      await insertSignUp(sessionId, role, userId, period);
+  res.json({ success: true });
+  }catch(error){
+    console.error("Error insert sign-up:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+})
