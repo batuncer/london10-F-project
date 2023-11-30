@@ -94,8 +94,8 @@ app.get("/auth/redirect", async (req, res) => {
 });
 
 const options = {
-  key: fs.readFileSync(`${process.cwd()}/client-key.pem`),
-  cert: fs.readFileSync(`${process.cwd()}/client-cert.pem`),
+  key: fs.readFileSync(`${__dirname}/client-key.pem`),
+  cert: fs.readFileSync(`${__dirname}/client-cert.pem`),
 };
 if (process.env.LOCAL_DEVELOPMENT) {
   // Slack requires https for OAuth, but locally we want to use http
@@ -105,12 +105,8 @@ if (process.env.LOCAL_DEVELOPMENT) {
 } else {
   // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
   console.log("PRODUCT");
-  https.createServer(options, app).listen(443);
+  https.createServer(options, app).listen(10000);
 }
-
-
-
-const port = process.env.PORT || 10000;
 
 ////sign up
 // app.post("/api/signup", async (req, res) => {
@@ -295,3 +291,8 @@ app.get("/session", async (req, res) => {
     console.error("Error executing query:", error);
   } 
 });
+
+
+// fixes "No exports found in module" error
+// https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
+export default app;
