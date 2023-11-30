@@ -1,6 +1,7 @@
 import Navbar from "../components/barComponents/Navbar"
 import { makeStyles } from '@mui/styles';
 import ClassCard from "../components/classes/ClassCard";
+import UserGuard from "../auth/UserGuard";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,13 +21,16 @@ const Main = () => {
     const classes = useStyles();
 
     return (
-        <div className="main-container">
-            <Navbar />
-            <ClassCard className={classes.root} />
-            <ClassCard className={classes.root} />
-            <ClassCard className={classes.root} />
-            <ClassCard className={classes.root} />
-        </div>
+        <UserGuard>
+            <div className="main-container">
+                <Navbar />
+                <ClassCard className={classes.root} />
+                <ClassCard className={classes.root} />
+                <ClassCard className={classes.root} />
+                <ClassCard className={classes.root} />
+            </div>
+        </UserGuard>
+
     )
 }
 
