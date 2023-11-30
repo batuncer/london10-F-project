@@ -26,7 +26,7 @@ export default function MultipleSelectCheckmarks() {
         // Simulate fetching data from the database
         const fetchData = async () => {
             try {
-                const response = await fetch('https://classplanner-server-g7rnlwq2t-saims-projects-b4692b5b.vercel.app/api/cities', { mode: 'no-cors' });
+                const response = await fetch('https://classplannner-server.onrender.com/api/cities');
 
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status} - ${response.statusText}`);

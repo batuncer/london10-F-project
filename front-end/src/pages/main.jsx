@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const url = `https://classplanner-server-g7rnlwq2t-saims-projects-b4692b5b.vercel.app/session`
+const url = `https://classplannner-server.onrender.com/session`
 
 const Main = () => {
     const classes = useStyles();
