@@ -105,12 +105,8 @@ if (process.env.LOCAL_DEVELOPMENT) {
 } else {
   // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
   console.log("PRODUCT");
-  https.createServer(options, app).listen(443);
+  https.createServer(options, app).listen(10000);
 }
-
-
-
-const port = process.env.PORT || 10000;
 
 ////sign up
 // app.post("/api/signup", async (req, res) => {
