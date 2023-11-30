@@ -292,11 +292,11 @@ app.get("/events", async (req, res) => {
 
 //session table
 app.get("/session", async (req, res) => {
-  try {
+   try {
     const result = await pool.query("SELECT * FROM public.session");
     res.send(result.rows);
   } catch (error) {
-    res.status(500).send("Error fetching city data");
+    res.status(500).send("Error fetching session data");
     console.error("Error executing query:", error);
-  }
+  } 
 });
