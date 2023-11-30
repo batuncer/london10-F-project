@@ -8,6 +8,7 @@ const https = require("https");
 const { WebClient } = require("@slack/web-api");
 const cors = require("cors");
 const { google } = require("googleapis");
+const { Console } = require("console");
 const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
 const backendUrl = process.env.BACK_END_URL;
@@ -113,8 +114,6 @@ if (process.env.LOCAL_DEVELOPMENT) {
   https.createServer(options, app).listen(10000);
 }
 
-
-
 ////sign up
 // app.post("/api/signup", async (req, res) => {
 //   try {
@@ -151,9 +150,6 @@ if (process.env.LOCAL_DEVELOPMENT) {
 //     res.status(500).json({ error: "Something went wrong." });
 //   }
 // });
-
-
-
 
 //cities
 app.get("/api/cities", async (req, res) => {
@@ -288,7 +284,6 @@ app.get("/events", async (req, res) => {
 //   );
 // });
 
-
 //Profile endpoint
 app.get("/api/profile", verifyToken, async (req, res) => {
   try {
@@ -360,19 +355,17 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
 
 //session table
 app.get("/session", async (req, res) => {
-   try {
+  try {
     const result = await pool.query("SELECT * FROM public.session");
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error fetching session data");
     console.error("Error executing query:", error);
-  } 
+  }
 });
-
 
 // fixes "No exports found in module" error
 // https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
-export default app;
 
 //Profile endpoint
 app.get("/api/profile", verifyToken, async (req, res) => {
@@ -444,13 +437,11 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
 });
 //session table
 app.get("/session", async (req, res) => {
-   try {
+  try {
     const result = await pool.query("SELECT * FROM public.session");
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error fetching session data");
     console.error("Error executing query:", error);
-  } 
+  }
 });
-
-
