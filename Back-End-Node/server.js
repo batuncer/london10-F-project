@@ -32,7 +32,7 @@ const createToken = (userId) => {
 };
 
 app.get("/auth/redirect", async (req, res) => {
-  try {
+ try {
     const { code } = req.query;
 
     // Exchange the code for an OAuth token
