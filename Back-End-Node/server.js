@@ -94,8 +94,8 @@ app.get("/auth/redirect", async (req, res) => {
 });
 
 const options = {
-  key: fs.readFileSync(`${process.cwd()}/client-key.pem`),
-  cert: fs.readFileSync(`${process.cwd()}/client-cert.pem`),
+  key: fs.readFileSync(`${__dirname}/client-key.pem`),
+  cert: fs.readFileSync(`${__dirname}/client-cert.pem`),
 };
 if (process.env.LOCAL_DEVELOPMENT) {
   // Slack requires https for OAuth, but locally we want to use http
