@@ -22,15 +22,14 @@ const {
 app.use(cors());
 app.use(express.json());
 require("dotenv").config();
-
 const client_id = process.env.VITE_SLACK_CLIENT_ID;
 const client_secret = process.env.SLACK_CLIENT_SECRET;
 const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
 
 const client = new WebClient();
 
-const createToken = (userId, role) => {
-  const token = jwt.sign({ id: userId, roles: role }, secret, {
+const createToken = (userId) => {
+  const token = jwt.sign({ id: userId, roles: [`student`] }, secret, {
     expiresIn: 86400, // expires in 24 hours
   });
 
@@ -72,10 +71,7 @@ app.get("/auth/redirect", async (req, res) => {
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
-      jwtToken = createToken(
-        existingUser.rows[0]["id"],
-        existingUser.rows[0]["default_role"]
-      );
+      jwtToken = createToken(existingUser.rows[0]["id"]);
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
@@ -92,10 +88,7 @@ app.get("/auth/redirect", async (req, res) => {
       );
 
       //login bussiness
-      jwtToken = createToken(
-        insertResult.rows[0]["id"],
-        insertResult.rows[0]["default_role"]
-      );
+      jwtToken = createToken(insertResult.rows[0]["id"]);
     }
 
     res.redirect(`${backendUrl}/oauthdone?code=${jwtToken}`);
@@ -461,6 +454,3 @@ app.get("/session", async (req, res) => {
 });
 
 
-// fixes "No exports found in module" error
-// https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
-export default app;
