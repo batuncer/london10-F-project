@@ -1,11 +1,13 @@
 const express = require("express");
 const app = express();
 const { pool } = require("./dbConfig");
+const {calendar} = require("./calendarconfig");
 const http = require("http");
 const fs = require("fs");
 const https = require("https");
 const { WebClient } = require("@slack/web-api");
 const cors = require("cors");
+const {google} = require("googleapis");
 const { Console } = require("console");
 const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
@@ -91,8 +93,7 @@ app.get("/auth/redirect", async (req, res) => {
   }
 });
 
-if (process.env.LOCAL_DEVELOPMENT) {
-  console.log("LOCAL_DEVELOPMENT");
+
   // Slack requires https for OAuth, but locally we want to use http
   // to avoid having to maintain our own certificates
   const options = {
@@ -109,29 +110,10 @@ if (process.env.LOCAL_DEVELOPMENT) {
     cert: fs.readFileSync("client-cert.pem"),
   };
   https.createServer(options, app).listen(443);
-  http.createServer(app).listen(10000);
+  // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
 }
 
-app.get("/", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM public.city");
-    res.send(result.rows);
-  } catch (error) {
-    res.status(500).send("Error inserting data");
-    console.error("Error executing query:", error);
-  }
-});
 
-//cities
-app.get("/api/cities", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM public.city");
-    res.send(result.rows);
-  } catch (error) {
-    res.status(500).send("Error fetching city data");
-    console.error("Error executing query:", error);
-  }
-});
 
 const port = process.env.PORT || 10000;
 
@@ -171,3 +153,140 @@ const port = process.env.PORT || 10000;
 //     res.status(500).json({ error: "Something went wrong." });
 //   }
 // });
+
+
+
+//cities
+app.get("/api/cities", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM public.city");
+    res.send(result.rows);
+  } catch (error) {
+    res.status(500).send("Error fetching city data");
+    console.error("Error executing query:", error);
+  }
+});
+
+app.get("/create-event", async (req, res) => {
+  console.log(calendar)
+  let newEvent = {
+    summary: "hello world",
+    location: "London, UK",
+    startDateTime: "2023-12-02T10:00:00",
+    endDateTime: "2023-12-02T17:00:00",
+  };
+ 
+  await calendar.events.insert({
+    // auth: oauth2Client,
+    calendarId:
+      "4c572a675834bb44f3c7a1cd40456214e4a2a75fa67a890e40212effcd7d9989@group.calendar.google.com",
+    requestBody: {
+      summary: newEvent.summary,
+      location: newEvent.location,
+      // attendees: [
+      //   {
+      //     email: "jonathanzheng8888@gmail.com",
+      //   },
+      // ],
+      colorId: "7",
+      start: {
+        dateTime: new Date(newEvent.startDateTime),
+      },
+      end: {
+        dateTime: new Date(newEvent.endDateTime),
+      },
+    },
+  });
+
+  res.send("at least something")
+})
+
+app.get("/events", async (req, res) => {
+  try {
+    const calendarResponse = await calendar.events.list({
+      calendarId:
+        "4c572a675834bb44f3c7a1cd40456214e4a2a75fa67a890e40212effcd7d9989@group.calendar.google.com",
+      timeMin: new Date().toISOString(),
+      maxResults: 10,
+      singleEvents: true,
+      orderBy: "startTime",
+    });
+
+    const events = calendarResponse.data.items;
+    if (!events || events.length === 0) {
+      console.log("No upcoming events found.");
+      res.status(404).send("No upcoming events found.");
+      return;
+    }
+
+    console.log("Upcoming 10 events:");
+    events.forEach((event, i) => {
+      const start = event.start.dateTime || event.start.date;
+      console.log(`${start} - ${event.summary}`);
+    });
+
+    res.status(200).json(events); // Or return these events in the response
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).send("Error fetching events");
+  }
+});
+
+
+//fetching only saturdays events
+// const currentDate = new Date();
+// const today = currentDate.getDay(); // Get the current day of the week
+
+// // Calculate the date for the first upcoming Saturday
+// const firstSaturday = new Date(currentDate.getTime());
+// const daysUntilSaturday = 6 - today; // Days until the next Saturday
+// firstSaturday.setDate(firstSaturday.getDate() + daysUntilSaturday);
+
+// // Array to store start and end dates for three Saturdays
+// const saturdays = [];
+// for (let i = 0; i < 3; i++) {
+//   const startDate = new Date(firstSaturday.getTime());
+//   startDate.setDate(startDate.getDate() + i * 7); // Increment by a week for each Saturday
+
+//   const endDate = new Date(startDate.getTime());
+//   endDate.setDate(endDate.getDate() + 1); // One day after the start date (i.e., Sunday)
+
+//   saturdays.push({ startDate, endDate });
+// }
+
+// // Retrieve events for each of the three Saturdays
+// saturdays.forEach(({ startDate, endDate }) => {
+//   calendar.events.list(
+//     {
+//       calendarId: "primary",
+//       timeMin: startDate.toISOString(),
+//       timeMax: endDate.toISOString(),
+//       singleEvents: true,
+//       orderBy: "startTime",
+//     },
+//     (err, res) => {
+//       if (err) {
+//         console.error("Error fetching events:", err);
+//         return;
+//       }
+//       const events = res.data.items;
+//       if (events.length) {
+//         console.log(
+//           `Events on ${startDate.toLocaleDateString("en-US", {
+//             weekday: "long",
+//           })}:`
+//         );
+//         events.forEach((event) => {
+//           console.log(`${event.summary} - ${event.start.dateTime}`);
+//         });
+//       } else {
+//         console.log(
+//           `No events found on ${startDate.toLocaleDateString("en-US", {
+//             weekday: "long",
+//           })}.`
+//         );
+//       }
+//     }
+//   );
+// });
+

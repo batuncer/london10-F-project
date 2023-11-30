@@ -12,6 +12,24 @@ const SlackLoginButton = ({ onLoged, onError }) => {
     slackAuthUrl.searchParams.append('client_id', slackClientId);
 
     const openPopup = () => {
+
+export default function SlackLoginButton() {
+    //let slack_url = ""
+    // const slackClientId = "6209798254180.6224787694115"
+    console.log(slackClientId)
+
+
+    const myUrlWithParams = new URL("https://slack.com/oauth/v2/authorize");
+
+    myUrlWithParams.searchParams.append("user_scope", "identity.basic,identity.email");
+    myUrlWithParams.searchParams.append("redirect_uri", `${backendUrl}/auth/redirect`);
+    myUrlWithParams.searchParams.append("client_id", slackClientId);
+
+
+    //let slack_url = `https://slack.com/oauth/v2/authorize?user_scope=identity.basic,identity.email&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&client_id=${slackClientId}`
+    //https://testworkspace-9th7274.slack.com/oauth?client_id=6209798254180.6224787694115&scope=&user_scope=users%3Aread%2Cusers.profile%3Aread&redirect_uri=https%3A%2F%2Flocalhost%3A443%2Fauth%2Fredirect&state=&granular_bot_scope=1&single_channel=0&install_redirect=&tracked=1&team=1
+
+
         const width = 600;
         const height = 800;
         const left = window.screenX + window.innerWidth / 2 - width / 2;
@@ -41,6 +59,7 @@ const SlackLoginButton = ({ onLoged, onError }) => {
             };
 
             try {
+                console.log(popup.location)
                 if (!popup.location.hostname.includes('slack.com')) {
                     if (popup.location.search) {
                         const query = new URLSearchParams(popup.location.search);
@@ -66,6 +85,7 @@ const SlackLoginButton = ({ onLoged, onError }) => {
         console.log(code);
         onLoged(code);
     };
+
 
     const onFailure = (error) => {
         onError(error);

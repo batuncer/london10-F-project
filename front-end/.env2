@@ -1,0 +1,9 @@
+REACT_APP_SLACK_CLIENT_ID=6209798254180.6224787694115
+DATABASE_URL=postgres://postgres.ovzucqqnvgkobswsxhem:annasaimbaki@aws-0-eu-west-2.pooler.supabase.com:6543/postgres 
+slack_url=`https://slack.com/openid/connect/authorize?response_type=code&scope=openid&user_scope=identity.basic%2Copenid%2Cidentity.email&client_id=${slackClientId}&redirect_uri=${redirectUri}` 
+VITE_SLACK_CLIENT_ID="6209798254180.6224787694115" 
+SLACK_CLIENT_SECRET="f4eeec1c93ac7b18071750dc03cda4f9"
+JWT_SECRET="secret"
+FRONTEND_URL=http://localhost:3000
+REACT_APP_SLACK_CLIENT_ID=6209798254180.6224787694115
+REACT_APP_BACKEND_URL=http://localhost:443
