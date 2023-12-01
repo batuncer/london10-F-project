@@ -27,10 +27,12 @@ export default function SignUp() {
                 <div>
                     <SignUpForm handleSignup={handleSignup} handleSlackSignup={handleSlackSignup} />
                 </div>
+
+                <div style={{ border: "1px solid red", marginRight: "200px", marginLeft:"200px", marginBottom: "40px" }}></div>
           
                 <div style={{ display: 'flex', gap: '20px', justifyContent: 'center'}}>
                     <BottomCard h1={"Become a Student"} image={"https://codeyourfuture.io/wp-content/uploads/2022/06/Volunteer-Tech.jpg"} link={"https://codeyourfuture.io/become-a-student/"} />
-                    <BottomCard h1={"Volunteer with CodeYourFuture"} image={"https://codeyourfuture.io/wp-content/uploads/2023/11/Volunteer-Coco-v02.jpg"} link={"https://codeyourfuture.io/volunteers/"} />
+                    <BottomCard h1={"Volunteering"} image={"https://codeyourfuture.io/wp-content/uploads/2023/11/Volunteer-Coco-v02.jpg"} link={"https://codeyourfuture.io/volunteers/"} />
                     <BottomCard h1={"Hire a Graduate"} image={"https://codeyourfuture.io/wp-content/uploads/2023/06/Volunteer-Employability-1.png"} link={"https://codeyourfuture.io/hire-a-graduate/"} />
                 </div>
             </Box>

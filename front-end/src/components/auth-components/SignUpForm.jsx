@@ -11,10 +11,10 @@ export default function SignUpForm({ handleSlackSignup }) {
                 <img
                     src="https://miro.medium.com/v2/resize:fit:1199/1*1bpa1wQ4ktPd_z9oG1CuZA.jpeg"
                     alt="Platform Logo"
-                    style={{ width: '50%' , margin:'5px'}}
+                    style={{ width: '50%' , marginRight:'60px', marginTop: "5px"}}
                 />
             </div>
-            <div >
+            <div style={{marginRight: "180px" }}>
                 <div style={{ marginBottom: '30px' }}>
                 <Typography component="h1" variant="h4">
                     Welcome to Our Platform!
