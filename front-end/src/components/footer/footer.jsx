@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
     return (
-        <div className="footer" style={{marginTop: "48px"}}>
+        <div className="footer" style={{marginTop: "60px"}}>
             <p>
                 © Code Your Future, All rights reserved | Registered{" "}
                 <a
