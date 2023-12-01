@@ -26,7 +26,6 @@ require("dotenv").config();
 const client_id = process.env.VITE_SLACK_CLIENT_ID;
 const client_secret = process.env.SLACK_CLIENT_SECRET;
 const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
-
 const client = new WebClient();
 
 const createToken = (userId) => {
@@ -65,7 +64,7 @@ app.get("/auth/redirect", async (req, res) => {
     console.log("neded", userIdentity, userProfile);
     // console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
-      "SELECT * FROM public.user WHERE email = $1",
+      "SELECT * FROM public.person WHERE email = $1",
       [userIdentity["user"]["email"]]
     );
     let jwtToken = "";
@@ -76,7 +75,7 @@ app.get("/auth/redirect", async (req, res) => {
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
-        "INSERT INTO public.user (created_at, password, homecity, default_role, email, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+        "INSERT INTO public.person (created_at, password, homecity, default_role, email, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
         [
           new Date(),
           null,

@@ -1,5 +1,3 @@
-///////////helpers///////
-
 
 const getSignUpDetailsFromDatabase = async (userId) => {
   try {
