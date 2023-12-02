@@ -435,3 +435,4 @@ app.get("/session", async (req, res) => {
     console.error("Error executing query:", error);
   }
 });
+export default app;
