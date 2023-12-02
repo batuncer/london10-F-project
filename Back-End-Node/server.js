@@ -60,10 +60,30 @@ app.get("/auth/redirect", async (req, res) => {
     // console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
 
+
       "SELECT * FROM public.user WHERE email = $1",
       [userProfile["profile"]["email"]]
+
     );
+
+    let avatar = userProfile["profile"]["image_original"];
+    let defaultRole = userProfile["profile"]["title"];
+    if (existingUser.rows[0] && existingUser.rows[0]["avatar"] !== avatar) {
+      await pool.query("UPDATE public.user SET avatar = $1 WHERE id = $2", [
+        avatar,
+        existingUser.rows[0]["id"],
+      ]);
+    }
+    // Update the default_role if it has changed
+    if (existingUser.rows[0]["default_role"] !== defaultRole) {
+      await pool.query(
+        "UPDATE public.user SET default_role = $1 WHERE id = $2",
+        [defaultRole, existingUser.rows[0]["id"]]
+      );
+    }
+
     let jwtToken = "";
+
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
@@ -71,15 +91,15 @@ app.get("/auth/redirect", async (req, res) => {
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
-        "INSERT INTO public.person (created_at, password, homecity, default_role, email, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+        "INSERT INTO public.user (created_at, homecity, default_role, email, first_name, last_name, avatar) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
         [
           new Date(),
-          null,
           "London",
           userProfile["profile"]["title"],
           userProfile["profile"]["email"],
           userProfile["profile"]["first_name"],
           userProfile["profile"]["last_name"],
+          avatar,
         ]
       );
 
@@ -149,7 +169,7 @@ if (process.env.LOCAL_DEVELOPMENT) {
 //cities
 app.get("/api/cities", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM public.city");
+    const result = await pool.query("SELECT * FROM public.region");
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error fetching city data");
@@ -286,7 +306,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
 
     // Fetch user profile details from the database
     const userProfile = await pool.query(
-      "SELECT * FROM public.user WHERE id = $1",
+      "SELECT id, first_name, last_name, email, default_role, avatar, homecity FROM public.user WHERE id = $1",
       [userId]
     );
 
@@ -301,6 +321,9 @@ app.get("/api/profile", verifyToken, async (req, res) => {
       first_name: userProfile.rows[0].first_name,
       last_name: userProfile.rows[0].last_name,
       email: userProfile.rows[0].email,
+      default_role: userProfile.rows[0].default_role,
+      avatar: userProfile.rows[0].avatar,
+      homecity: userProfile.rows[0].homecity,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -363,34 +386,6 @@ app.get("/session", async (req, res) => {
 // https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
 
 //Profile endpoint
-app.get("/api/profile", verifyToken, async (req, res) => {
-  try {
-    const userId = req.userId;
-
-    // Fetch user profile details from the database
-    const userProfile = await pool.query(
-      "SELECT * FROM public.user WHERE id = $1",
-      [userId]
-    );
-
-    if (userProfile.rows.length === 0) {
-      // User not found
-      return res.status(404).json({ error: "User not found." });
-    }
-
-    // Respond with the user's profile details
-    res.status(200).json({
-      id: userProfile.rows[0].id,
-      first_name: userProfile.rows[0].first_name,
-      last_name: userProfile.rows[0].last_name,
-      email: userProfile.rows[0].email,
-    });
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
-    res.status(500).json({ error: "Something went wrong." });
-  }
-});
-
 app.get("/api/signup-details", verifyToken, async (req, res) => {
   try {
     const signUpDetails = await getSignUpDetailsFromDatabase();

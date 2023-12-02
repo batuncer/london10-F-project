@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
 
 
             if (accessToken) {
-
+                setSession(accessToken);
                 const user = {}
                 dispatch({
                     type: TYPE_INITIALIZE,

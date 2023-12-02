@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const url = `https://classplannner-server.onrender.com/session`
+const url = `http://localhost:10000/session`
 
 const Main = () => {
     const classes = useStyles();
