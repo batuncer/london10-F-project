@@ -10,7 +10,7 @@ const Header = () => {
         <Toolbar style={{ backgroundColor: "white" }}>
           <img
             src="https://codeyourfuture.io/wp-content/uploads/2019/03/cyf_brand.png"
-            alt="Code Your Future Logo"
+
             style={{ height: '90px', marginRight: '0px', backgroundColor:'#sw7031' }}
           />
           <Typography variant="h2"
@@ -18,12 +18,11 @@ const Header = () => {
             sx={{
               flexGrow: 1,
               color: "black",
-              justifyContent: 'flex-end', 
-              display: 'flex', 
+              justifyContent: 'flex-end',
+              display: 'flex',
               fontFamily: "'Arvo', serif",
-              letterSpacing: '-4px', 
-              fontWeight: 'bold' 
-
+              letterSpacing: '-4px',
+              fontWeight: 'bold'
             }}>
             Class Planner
           </Typography>

@@ -1,16 +1,29 @@
-CREATE TABLE city (
+CREATE TABLE region (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    calendar_id varchar(250)
+    name VARCHAR(100)
 );
 
-CREATE TABLE user_attendance (
+CREATE TABLE cohort (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(250),
-    email VARCHAR(250),
-    token VARCHAR(250),
-    homecity INT REFERENCES city(id),
-    default_role VARCHAR(100)
+    name VARCHAR(100),
+    google_calendar_url varchar(250),
+    region_id INT REFERENCES region(id)
+);
+
+CREATE TABLE role (
+    -- e.g. Zoom Master, Tech Ed Assistant, Personal Development Lead
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE person (
+    id SERIAL PRIMARY KEY,
+    slack_photo_link VARCHAR(250),
+    slack_username VARCHAR(250),
+    slack_email VARCHAR(250),
+    slack_token VARCHAR(250),
+    default_cohort_id INT REFERENCES cohort(id),
+    default_role_id INT REFERENCES role(id)
 );
 
 CREATE TABLE lesson_content (
@@ -25,24 +38,18 @@ CREATE TABLE lesson_content (
 CREATE TABLE session (
     id SERIAL PRIMARY KEY,
     date TIMESTAMP,
-    lesson_content_id INT REFERENCES lesson_content(id),
-    city_id INT REFERENCES city(id),
     time_start TIMESTAMP,
     time_end TIMESTAMP,
-    event_type VARCHAR(250),
-    location VARCHAR(250),
-    cohort VARCHAR(100)
+    event_type VARCHAR(250),  -- e.g. Technical Education/Personal Development
+    location VARCHAR(250),  -- can also be Zoom link
+    lesson_content_id INT REFERENCES lesson_content(id),  -- derive name of session from this+cohort
+    cohort_id INT REFERENCES cohort(id)
 );
 
 CREATE TABLE attendance (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES user_attendance(id),
+    period VARCHAR(100),
+    person_id INT REFERENCES person(id),
     session_id INT REFERENCES session(id),
-    role int REFERENCES roles(id),
-    period VARCHAR(100)
-);
-
-CREATE TABLE roles (
-    id SERIAL PRIMARY KEY,
-    city VARCHAR(150)
+    role_id INT REFERENCES role(id)
 );
