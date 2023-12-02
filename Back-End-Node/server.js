@@ -51,21 +51,19 @@ app.get("/auth/redirect", async (req, res) => {
     console.log("OAuth Response", result);
 
     // Use the token to get user information
-    const userIdentity = await client.users.identity({
-      user: result.authed_user.id,
-      token: result.authed_user.access_token,
-    });
-
     const userProfile = await client.users.profile.get({
       user: result.authed_user.id,
       token: result.authed_user.access_token,
     });
 
-    console.log("neded", userIdentity, userProfile);
+    console.log("neded", userProfile);
     // console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
+
+
       "SELECT * FROM public.user WHERE email = $1",
-      [userIdentity["user"]["email"]]
+      [userProfile["profile"]["email"]]
+
     );
 
     let avatar = userProfile["profile"]["image_original"];
@@ -98,7 +96,7 @@ app.get("/auth/redirect", async (req, res) => {
           new Date(),
           "London",
           userProfile["profile"]["title"],
-          userIdentity["user"]["email"],
+          userProfile["profile"]["email"],
           userProfile["profile"]["first_name"],
           userProfile["profile"]["last_name"],
           avatar,

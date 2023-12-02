@@ -1,16 +1,21 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import Iconify from '../iconify/Iconify';
+import { makeStyles } from "@material-ui/core/styles";
+
 
 const slackClientId = process.env.REACT_APP_SLACK_CLIENT_ID;
-const backendUrl = process.env.REACT_APP_BACK_END_URL;
+// const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const backendUrl = "https://localhost:443"
+
+
 
 const SlackLoginButton = ({ onLoged, onError }) => {
     const slackAuthUrl = new URL('https://slack.com/oauth/v2/authorize');
-    slackAuthUrl.searchParams.append('user_scope', 'identity.basic,identity.email');
+    slackAuthUrl.searchParams.append('user_scope', 'users:read,users.profile:read,users:read.email');
     slackAuthUrl.searchParams.append('redirect_uri', `${backendUrl}/auth/redirect`);
     slackAuthUrl.searchParams.append('client_id', slackClientId);
-
+    
     const openPopup = () => {
         const width = 600;
         const height = 800;
@@ -47,6 +52,7 @@ const SlackLoginButton = ({ onLoged, onError }) => {
                         const query = new URLSearchParams(popup.location.search);
                         const slackCode = query.get('code');
 
+
                         closeDialog();
                         if (slackCode) {
                             return onSuccess(slackCode);
@@ -73,11 +79,25 @@ const SlackLoginButton = ({ onLoged, onError }) => {
         onError(error);
     };
 
+    
     return (
-        <Button aria-label="Login" startIcon={<Iconify icon="devicon:slack" />} onClick={handleClick}>
+        <Button
+            aria-label="Login"
+            startIcon={<Iconify icon="devicon:slack" />}
+            onClick={handleClick}
+            style={{
+                border:'1px solid red',
+                color: 'red',
+                transition: 'background-color 0.3s ease, color 0.3s ease',
+                '&:hover': {
+                    backgroundColor: 'red',
+                },
+            }}
+        >
             Signup With Slack
         </Button>
     );
+
 };
 
 export default SlackLoginButton;
