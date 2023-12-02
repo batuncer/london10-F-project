@@ -12,7 +12,7 @@ const backendUrl = "https://localhost:443"
 
 const SlackLoginButton = ({ onLoged, onError }) => {
     const slackAuthUrl = new URL('https://slack.com/oauth/v2/authorize');
-    slackAuthUrl.searchParams.append('user_scope', 'identity.basic,identity.email');
+    slackAuthUrl.searchParams.append('user_scope', 'users:read,users.profile:read,users:read.email');
     slackAuthUrl.searchParams.append('redirect_uri', `${backendUrl}/auth/redirect`);
     slackAuthUrl.searchParams.append('client_id', slackClientId);
     
