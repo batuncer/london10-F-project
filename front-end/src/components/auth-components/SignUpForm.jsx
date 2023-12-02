@@ -1,130 +1,37 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import SlackLoginButton from "./SlackLoginButton";
 
-const useStyles = makeStyles(theme => ({
-    "@global": {
-        body: {
-            backgroundColor: theme.palette.common.white
-        }
-    },
-    paper: {
-        marginTop: theme.spacing(8),
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center"
-    },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main
-    },
-    form: {
-        width: "100%", // Fix IE 11 issue.
-        marginTop: theme.spacing(3)
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2)
-    },
-    customStyle: {
 
-        backgroundColor: 'rgb(255, 255, 255)',
-
-    
-        padding: theme.spacing(2),
-        marginRight: "30px",
-        marginTop: "100px",
-    },
-}));
-export default function SignUpForm({ handleSignup, handleSlackSignup }) {
-    const classes = useStyles();
+export default function SignUpForm({ handleSlackSignup }) {
     return (
-        <Container component="main" maxWidth="xs" className={classes.customStyle}>
-            <CssBaseline />
-            <div className={classes.paper}>
+        <Container style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <div>
+                <img
+                    src="https://miro.medium.com/v2/resize:fit:1199/1*1bpa1wQ4ktPd_z9oG1CuZA.jpeg"
+                    alt="Platform Logo"
+                    style={{ width: '50%' , marginRight:'60px', marginTop: "5px"}}
+                />
+            </div>
+            <div style={{marginRight: "180px" }}>
+                <div style={{ marginBottom: '30px' }}>
                 <Typography component="h1" variant="h4">
                     Welcome to Our Platform!
                 </Typography>
                 <Typography component="h4" variant="h6">
                     Explore our courses and upcoming classes.
                 </Typography>
-                <form className={classes.form} noValidate>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                autoComplete="fname"
-                                name="firstName"
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="firstName"
-                                label="First Name"
-                                autoFocus
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="lastName"
-                                label="Last Name"
-                                name="lastName"
-                                autoComplete="lname"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                variant="outlined"
-                                required
-                                fullWidth
-                                id="email"
-                                label="Email Address"
-                                name="email"
-                                autoComplete="email"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                variant="outlined"
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type="password"
-                                id="password"
-                                autoComplete="current-password"
-                            />
-                        </Grid>
-                    </Grid>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        onClick={handleSignup}
-                    >
-                        Sign Up
-                    </Button>
-                    <SlackLoginButton onLoged={handleSlackSignup} onError={(error) => {
-                        alert(error)
-                    }} />
-                    <Grid container justify="flex-end">
-                        <Grid item>
-                            <Link href="/login" variant="body2">
-                                Already have an account? Sign in
-                            </Link>
-                        </Grid>
-                    </Grid>
-                </form>
+                </div>
+                <div>
+                <SlackLoginButton
+                    onLoged={handleSlackSignup}
+                    onError={(error) => {
+                        alert(error);
+                    }}
+                />
+                </div>
             </div>
         </Container>
-    )
+    );
 }

@@ -7,8 +7,8 @@ import Typography from '@mui/material/Typography';
 
 export default function BottomCard(props) {
     const cardStyle = {
-        width: 300,
-        height: 250,
+        width:280,
+        height: 200,
         borderRadius: "10px",
         border: "1px solid red",
         //transition: "border 0.3s",
