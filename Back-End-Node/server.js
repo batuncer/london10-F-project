@@ -290,4 +290,4 @@ app.get("/session", async (req, res) => {
 
 // fixes "No exports found in module" error
 // https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
-//export default app;
+export default app;
