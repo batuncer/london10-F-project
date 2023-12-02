@@ -46,21 +46,16 @@ app.get("/auth/redirect", async (req, res) => {
     console.log("OAuth Response", result);
 
     // Use the token to get user information
-    const userIdentity = await client.users.identity({
-      user: result.authed_user.id,
-      token: result.authed_user.access_token,
-    });
-
     const userProfile = await client.users.profile.get({
       user: result.authed_user.id,
       token: result.authed_user.access_token,
     });
 
-    console.log("neded", userIdentity, userProfile);
+    console.log("neded", userProfile);
     // console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
       "SELECT * FROM public.user WHERE email = $1",
-      [userIdentity["user"]["email"]]
+      [userProfile["profile"]["email"]]
     );
     let jwtToken = "";
     if (existingUser.rows.length > 0) {
@@ -76,7 +71,7 @@ app.get("/auth/redirect", async (req, res) => {
           null,
           "London",
           userProfile["profile"]["title"],
-          userIdentity["user"]["email"],
+          userProfile["profile"]["email"],
           userProfile["profile"]["first_name"],
           userProfile["profile"]["last_name"],
         ]
@@ -295,4 +290,4 @@ app.get("/session", async (req, res) => {
 
 // fixes "No exports found in module" error
 // https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
-export default app;
+//export default app;
