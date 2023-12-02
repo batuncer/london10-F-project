@@ -7,7 +7,7 @@ const SignUpClasses = () => {
         const fetchSignUpDetails = async () => {
             try {
                 // Fetch sign-up details from your backend
-                const response = await fetch("/api/signup-details");
+                const response = await fetch("http://localhost:10000/api/signup-details");
                 const data = await response.json();
                 setSignUpDetails(data);
             } catch (error) {
@@ -34,7 +34,7 @@ const SignUpClasses = () => {
         }
     };
     return (
-        <div style={{ height: "100px", overflow: "auto", background: "#f0f0f0", margin: "0 40px" }}>
+        <div>
             {signUpDetails.length > 0 ? (
                 signUpDetails.map((attendance) => (
                     <div key={attendance.id} style={{ display: "inline-block", margin: "10px", padding: "10px", border: "1px solid #ccc" }}>
@@ -45,7 +45,7 @@ const SignUpClasses = () => {
                     </div>
                 ))
             ) : (
-                <div style={{ textAlign: "center", padding: "20px" }}>
+                    <div style={{ color:" #36454f"}}>
                     You haven't signed up for any classes.
                 </div>
             )}

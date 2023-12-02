@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import BottomCard from "../components/main-bottom/BottomCard"
 import LoginGuard from "../auth/LoginGuard";
 import { useAuthContext } from "../auth/useAutContext";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundImage: `url(${backgroundImage})`,
