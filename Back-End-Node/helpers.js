@@ -16,11 +16,11 @@ const getSignUpDetailsFromDatabase = async (userId) => {
   }
 };
 
-const cancelSignUp = async (classId, userId) => {
+const cancelSignUp = async (sessionId, userId) => {
   try {
     await pool.query(
       "DELETE FROM public.attendee WHERE person_id = $1 AND session_id = $2",
-      [userId, classId]
+      [userId, sessionId]
     );
   } catch (error) {
     console.error("Error canceling sign-up:", error);

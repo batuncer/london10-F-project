@@ -39,7 +39,6 @@ const SignUpLessonButton = (props) => {
     const handleSignUpSubmit = async () => {
         const sessionId = props.sessionId;
         const role = selectedRole;
-debugger
 
         try {
             const body = {

@@ -5,9 +5,17 @@ const SeeAttendancesButton = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [attendances, setAttendances] = useState([]);
 
+    
     const handleButtonClick = async () => {
+        const sessionId = props.sessionId;
+
         try {
-            const response = await axios.get(`/attendee/${props.sessionId}`);
+            const body = {
+                sessionId: sessionId,
+     
+            }
+
+            const response = await axios.get(`/attendee/${sessionId}`, body);
 
             if (response.status !== 200) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -24,6 +32,8 @@ const SeeAttendancesButton = (props) => {
     const handleCloseModal = () => {
         setModalVisible(false);
     };
+
+    
     return (
         <>
             <Button

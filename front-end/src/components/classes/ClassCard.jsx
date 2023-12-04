@@ -30,7 +30,7 @@ const ClassCard = (props) => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '10px' , marginTop:'15px'}}>
-                        <SeeAttendancesButton whoLeading={props.who_leading} />
+                        <SeeAttendancesButton whoLeading={props.who_leading} sessionId={props.sessionId} />
                         <SignUpLessonButton sessionId={props.sessionId} />
                     </div>
 

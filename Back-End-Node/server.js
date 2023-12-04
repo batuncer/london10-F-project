@@ -395,10 +395,10 @@ app.get("/api/signup-details", verifyToken, async (req, res) => {
 // Delete by id from signup classes
 app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   try {
-    const classId = req.params.classId;
+    const sessionId = req.params.sessionId;
     const userId = req.userId;
 
-    await cancelSignUp(classId, userId);
+    await cancelSignUp(sessionId, userId);
 
     res.json({ success: true });
   } catch (error) {
@@ -436,11 +436,10 @@ app.get("/session", async (req, res) => {
 
 //see attendee all voluteer for the session
 app.get("/attendee/:sessionId", async (req, res) => {
-  const sessionId = req.body.sessionId;
-
+  const sessionId = req.params.sessionId;
   try {
     const result = await pool.query(
-      "SELECT person.first_name, person.last_name, role.role FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session_id WHERE session_id = $1;",
+      "SELECT person.first_name, person.last_name, role.role FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session.id WHERE session.id = $1;",
       [sessionId]
     );
 
