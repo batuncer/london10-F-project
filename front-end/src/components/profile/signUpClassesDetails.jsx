@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
+import axios from "../../utils/axios"
 
-const SignUpClasses = () => {
+const SignUpClassesDetails = () => {
     const [signUpDetails, setSignUpDetails] = useState([]);
 
     useEffect(() => {
         const fetchSignUpDetails = async () => {
             try {
                 // Fetch sign-up details from your backend
-                const response = await fetch("http://localhost:10000/api/signup-details");
-                const data = await response.json();
+                const response = await axios.get("/api/signup-details");
+                const data = response.data;
                 setSignUpDetails(data);
             } catch (error) {
                 console.error("Error fetching sign-up details:", error);
@@ -18,16 +19,14 @@ const SignUpClasses = () => {
         fetchSignUpDetails();
     }, []);
 
-    const handleCancelSignUp = async (classId) => {
+    const handleCancelSignUp = async (sessionId) => {
         try {
             // Send a request to cancel sign-up for the specified class
-            await fetch(`/api/cancel-signup/${classId}`, {
-                method: "POST",
-            });
+            await axios.post(`/api/cancel-signup/${sessionId}`);
 
             // Update the local state to reflect the changes
             setSignUpDetails((prevDetails) =>
-                prevDetails.filter((classDetail) => classDetail.id !== classId)
+                prevDetails.filter((classDetail) => classDetail.id !== sessionId)
             );
         } catch (error) {
             console.error("Error canceling sign-up:", error);
@@ -53,4 +52,4 @@ const SignUpClasses = () => {
     );
 };
 
-export default SignUpClasses;
+export default SignUpClassesDetails;

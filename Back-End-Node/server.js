@@ -13,6 +13,7 @@ const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
 const backendUrl = process.env.BACK_END_URL;
 const verifyToken = require("./verifyToken");
+const verifyAdminToken = require("./verifyAdminToken.js");
 
 const {
   getSignUpDetailsFromDatabase,
@@ -28,8 +29,8 @@ const client_secret = process.env.SLACK_CLIENT_SECRET;
 const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
 const client = new WebClient();
 
-const createToken = (userId) => {
-  const token = jwt.sign({ id: userId, roles: [`student`] }, secret, {
+const createToken = (userId, role) => {
+  const token = jwt.sign({ id: userId, roles: role }, secret, {
     expiresIn: 86400, // expires in 24 hours
   });
 
@@ -59,25 +60,25 @@ app.get("/auth/redirect", async (req, res) => {
     console.log("neded", userProfile);
     // console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
-
-
-      "SELECT * FROM public.user WHERE email = $1",
+      "SELECT * FROM public.person WHERE email = $1",
       [userProfile["profile"]["email"]]
-
     );
 
     let avatar = userProfile["profile"]["image_original"];
     let defaultRole = userProfile["profile"]["title"];
     if (existingUser.rows[0] && existingUser.rows[0]["avatar"] !== avatar) {
-      await pool.query("UPDATE public.user SET avatar = $1 WHERE id = $2", [
+      await pool.query("UPDATE public.person SET avatar = $1 WHERE id = $2", [
         avatar,
         existingUser.rows[0]["id"],
       ]);
     }
     // Update the default_role if it has changed
-    if (existingUser.rows[0]["default_role"] !== defaultRole) {
+    if (
+      existingUser.rows[0]["default_role"] !== "admin" &&
+      existingUser.rows[0]["default_role"] !== defaultRole
+    ) {
       await pool.query(
-        "UPDATE public.user SET default_role = $1 WHERE id = $2",
+        "UPDATE public.person SET default_role = $1 WHERE id = $2",
         [defaultRole, existingUser.rows[0]["id"]]
       );
     }
@@ -87,11 +88,14 @@ app.get("/auth/redirect", async (req, res) => {
     if (existingUser.rows.length > 0) {
       console.log(existingUser);
       //Login Bussiness
-      jwtToken = createToken(existingUser.rows[0]["id"]);
+      jwtToken = createToken(
+        existingUser.rows[0]["id"],
+        existingUser.rows[0]["default_role"]
+      );
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
-        "INSERT INTO public.user (created_at, homecity, default_role, email, first_name, last_name, avatar) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+        "INSERT INTO public.person (created_at, homecity, default_role, email, first_name, last_name, avatar) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
         [
           new Date(),
           "London",
@@ -104,7 +108,10 @@ app.get("/auth/redirect", async (req, res) => {
       );
 
       //login bussiness
-      jwtToken = createToken(insertResult.rows[0]["id"]);
+      jwtToken = createToken(
+        insertResult.rows[0]["id"],
+        userProfile["profile"]["title"]
+      );
     }
 
     res.redirect(`${backendUrl}/oauthdone?code=${jwtToken}`);
@@ -152,7 +159,7 @@ if (process.env.LOCAL_DEVELOPMENT) {
 
 //     // Insert the new user into the database
 //     const insertResult = await pool.query(
-//       "INSERT INTO public.user (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+//       "INSERT INTO public.person (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 //       [first_name, last_name, email, hashedPassword, city, role]
 //     );
 //     const jwtToken = createToken(insertResult.rows[0]["id"]);
@@ -306,7 +313,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
 
     // Fetch user profile details from the database
     const userProfile = await pool.query(
-      "SELECT id, first_name, last_name, email, default_role, avatar, homecity FROM public.user WHERE id = $1",
+      "SELECT id, first_name, last_name, email, default_role, avatar, homecity FROM public.person WHERE id = $1",
       [userId]
     );
 
@@ -324,6 +331,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
       default_role: userProfile.rows[0].default_role,
       avatar: userProfile.rows[0].avatar,
       homecity: userProfile.rows[0].homecity,
+      roles: req.userRoles,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -342,12 +350,12 @@ app.get("/api/signup-details", verifyToken, async (req, res) => {
 });
 
 // Delete by id from signup classes
-app.get("/api/cancel-signup/:classId", verifyToken, async (req, res) => {
+app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   try {
-    const classId = req.params.classId;
+    const sessionId = req.params.sessionId;
     const userId = req.userId;
 
-    await cancelSignUp(classId, userId);
+    await cancelSignUp(sessionId, userId);
 
     res.json({ success: true });
   } catch (error) {
@@ -360,25 +368,13 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
   try {
     const sessionId = req.body.sessionId;
     const userId = req.userId;
-    const period = req.body.period;
     const role = req.body.role;
 
-    await insertSignUp(sessionId, role, userId, period);
+    await insertSignUp(sessionId, role, userId);
     res.json({ success: true });
   } catch (error) {
     console.error("Error insert sign-up:", error);
     res.status(500).json({ error: "Something went wrong." });
-  }
-});
-
-//session table
-app.get("/session", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM public.session");
-    res.send(result.rows);
-  } catch (error) {
-    res.status(500).send("Error fetching session data");
-    console.error("Error executing query:", error);
   }
 });
 
@@ -397,7 +393,7 @@ app.get("/api/signup-details", verifyToken, async (req, res) => {
 });
 
 // Delete by id from signup classes
-app.get("/api/cancel-signup/:classId", verifyToken, async (req, res) => {
+app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   try {
     const classId = req.params.classId;
     const userId = req.userId;
@@ -415,23 +411,57 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
   try {
     const sessionId = req.body.sessionId;
     const userId = req.userId;
-    const period = req.body.period;
     const role = req.body.role;
 
-    await insertSignUp(sessionId, role, userId, period);
+    await insertSignUp(sessionId, role, userId);
     res.json({ success: true });
   } catch (error) {
     console.error("Error insert sign-up:", error);
     res.status(500).json({ error: "Something went wrong." });
   }
 });
+
 //session table
 app.get("/session", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM public.session");
+    const result = await pool.query(
+      "SELECT session.id, session.date, session.time_start, session.time_end, session.who_leading, session.cohort, session.city, session.location, syllabus.module_name, syllabus.module_week, syllabus.syllabus_link FROM session JOIN syllabus ON session.syllabus_id = syllabus.id;"
+    );
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error fetching session data");
     console.error("Error executing query:", error);
   }
 });
+
+//see attendee all voluteer for the session
+app.get("/attendee/:sessionId", async (req, res) => {
+  const sessionId = req.body.sessionId;
+
+  try {
+    const result = await pool.query(
+      "SELECT person.first_name, person.last_name, role.role FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session_id WHERE session_id = $1;",
+      [sessionId]
+    );
+
+    res.send(result.rows);
+  } catch (error) {
+    res.status(500).send("Error fetching attendee data");
+    console.error("Error executing query:", error);
+  }
+});
+
+app.get("/api/roles", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM public.role");
+
+    const roles = result.rows.map((role) => ({ id: role.id, name: role.role }));
+
+    res.json(roles);
+  } catch (error) {
+    console.error("Error fetching roles:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
+// export default app;

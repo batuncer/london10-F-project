@@ -12,6 +12,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '../../auth/useAutContext';
 import SchoolIcon from '@mui/icons-material/School';
+import AdminButton from './AdminButton';
 
 
 
@@ -45,7 +46,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
         width: '100%',
@@ -55,21 +55,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function Navbar() {
-
-    const { logout } = useAuthContext()
+const Navbar = () => {
+    const { logout } = useAuthContext();
     const handleLogout = () => {
-        logout()
-
+        logout();
         window.location.reload();
     };
 
     const mainPage = () => {
-        window.location.href = "/main"; 
-    }
-
-
-
+        window.location.href = '/main';
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -86,14 +81,10 @@ export default function Navbar() {
                         />
                     </Search>
                     <Box sx={{ flexGrow: 1 }} />
+                    <AdminButton />
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton
-                            size="large"
-                            color="inherit"
-                        >
-
+                        <IconButton size="large" color="inherit">
                             <SchoolIcon onClick={mainPage} />
-
                         </IconButton>
                         <IconButton
                             component={Link}
@@ -102,12 +93,10 @@ export default function Navbar() {
                             aria-label="account of current user"
                             aria-haspopup="true"
                             color="inherit"
-                            
                         >
                             <AccountCircle />
                         </IconButton>
                     </Box>
-
                     <IconButton color="inherit" onClick={handleLogout}>
                         <LogoutIcon />
                     </IconButton>
@@ -115,4 +104,6 @@ export default function Navbar() {
             </AppBar>
         </Box>
     );
-}
+};
+
+export default Navbar;
