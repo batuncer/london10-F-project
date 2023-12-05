@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import EditableField from "./EditableField";
+import axios from '../../utils/axios';
 
 const module_no = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const module = ["HTML", "CSS", "JS1", "JS2", "JS3", "Node.js", "SQL"];
@@ -16,8 +17,10 @@ const link = [
 ];
 
 export default function LessonForm() {
-  function submitForm() {
+  async function submitForm() {
     console.log("Form submitted");
+    // TODO: call POST /session with actual data
+    const response = await axios.post("lesson_content", {});
   }
 
   return (

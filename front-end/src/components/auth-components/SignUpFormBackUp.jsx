@@ -77,7 +77,7 @@ Personal Development Rep 2
     /////DAtabase connect ??
     const onSubmit = async (data) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/signup`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

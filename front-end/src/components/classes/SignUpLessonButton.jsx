@@ -10,7 +10,7 @@ const SignUpLessonButton = (props) => {
     useEffect(() => {
         const fetchRole = async () => {
             try {
-                const response = await axios.get("api/roles");
+                const response = await axios.get("roles");
                 const data = response.data;
                 setAvailableRoles(data);
                 if (data.length > 0) {
@@ -45,7 +45,7 @@ const SignUpLessonButton = (props) => {
                 sessionId: sessionId,
                 role: role,
             }
-            const response = await axios.post("api/insert-signup", body);
+            const response = await axios.post("insert-signup", body);
             const data = response.data;
         } catch (error) {
             console.error("Error insert sign-up :", error);

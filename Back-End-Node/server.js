@@ -11,7 +11,7 @@ const { google } = require("googleapis");
 const { Console } = require("console");
 const secret = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
-const backendUrl = process.env.BACK_END_URL;
+const frontendUrl = process.env.FRONT_END_URL;
 const verifyToken = require("./verifyToken");
 const verifyAdminToken = require("./verifyAdminToken.js");
 
@@ -30,6 +30,7 @@ const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
 const client = new WebClient();
 
 const createToken = (userId, role) => {
+  // TODO: it is confusing at the moment that we are using Slack title as the role here
   const token = jwt.sign({ id: userId, roles: role }, secret, {
     expiresIn: 86400, // expires in 24 hours
   });
@@ -49,72 +50,53 @@ app.get("/auth/redirect", async (req, res) => {
       redirect_uri,
     });
 
-    //console.log("OAuth Response", result);
-
     // Use the token to get user information
     const userProfile = await client.users.profile.get({
       user: result.authed_user.id,
       token: result.authed_user.access_token,
     });
 
-    //console.log("neded", userProfile);
-    // //console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
-      "SELECT * FROM public.person WHERE email = $1",
+      "SELECT * FROM person WHERE slack_email = $1",
       [userProfile["profile"]["email"]]
     );
-
-    let avatar = userProfile["profile"]["image_original"];
-    let defaultRole = userProfile["profile"]["title"];
-    if (existingUser.rows[0] && existingUser.rows[0]["avatar"] !== avatar) {
-      await pool.query("UPDATE public.person SET avatar = $1 WHERE id = $2", [
-        avatar,
-        existingUser.rows[0]["id"],
-      ]);
-    }
-    // Update the default_role if it has changed
-    if (
-      existingUser.rows[0]["default_role"] !== "admin" &&
-      existingUser.rows[0]["default_role"] !== defaultRole
-    ) {
-      await pool.query(
-        "UPDATE public.person SET default_role = $1 WHERE id = $2",
-        [defaultRole, existingUser.rows[0]["id"]]
-      );
-    }
 
     let jwtToken = "";
 
     if (existingUser.rows.length > 0) {
-      //console.log(existingUser);
-      //Login Bussiness
       jwtToken = createToken(
         existingUser.rows[0]["id"],
-        existingUser.rows[0]["default_role"]
+        existingUser.rows[0]["slack_title"]  // TODO: weird that title = jwt role
       );
+
+      // TODO: update values if changed
+      // // Update avatar if it has changed
+      // if (existingUser.rows[0]["avatar"] !== userProfile["profile"]["image_original"]) {
+      //   await pool.query("UPDATE person SET avatar = $1 WHERE id = $2", [
+      //     userProfile["profile"]["image_original"],
+      //     existingUser.rows[0]["id"],
+      //   ]);
+      // }
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
-        "INSERT INTO public.person (created_at, homecity, default_role, email, first_name, last_name, avatar) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+        "INSERT INTO person (slack_photo_link, slack_firstname, slack_lastname, slack_email, slack_title) VALUES ($1, $2, $3, $4, $5) RETURNING id, slack_title",
         [
-          new Date(),
-          "London",
-          userProfile["profile"]["title"],
-          userProfile["profile"]["email"],
+          userProfile["profile"]["image_original"],
           userProfile["profile"]["first_name"],
           userProfile["profile"]["last_name"],
-          avatar,
+          userProfile["profile"]["email"],
+          userProfile["profile"]["title"],
         ]
       );
-
-      //login bussiness
       jwtToken = createToken(
         insertResult.rows[0]["id"],
-        userProfile["profile"]["title"]
+        insertResult.rows[0]["slack_title"]  // TODO: weird that title = jwt role
       );
     }
 
-    res.redirect(`${backendUrl}/oauthdone?code=${jwtToken}`);
+    // redirect back to frontend so that it can run setSession with this token
+    res.redirect(`${frontendUrl}/oauthdone?code=${jwtToken}`);
   } catch (error) {
     console.error("Error during OAuth process:", error);
     res.status(500).send("Something went wrong!");
@@ -136,47 +118,10 @@ if (process.env.LOCAL_DEVELOPMENT) {
   https.createServer(options, app).listen(10000);
 }
 
-////sign up
-// app.post("/api/signup", async (req, res) => {
-//   try {
-//     const { first_name, last_name, email, password, city, role } = req.body;
-
-//     // Check if the user already exists
-//     const existingUser = await pool.query(
-//       "SELECT * FROM users WHERE email = $1",
-//       [email]
-//     );
-
-//     if (existingUser.rows.length > 0) {
-//       return res
-//         .status(400)
-//         .json({ error: "User with this email already exists." });
-//     }
-
-//     // Hash the password
-//     const saltRounds = 10;
-//     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-//     // Insert the new user into the database
-//     const insertResult = await pool.query(
-//       "INSERT INTO public.person (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-//       [first_name, last_name, email, hashedPassword, city, role]
-//     );
-//     const jwtToken = createToken(insertResult.rows[0]["id"]);
-
-//     res
-//       .status(201)
-//       .json({ message: "User registered successfully.", token: jwtToken });
-//   } catch (error) {
-//     console.error("Error during user registration:", error);
-//     res.status(500).json({ error: "Something went wrong." });
-//   }
-// });
-
 //cities
-app.get("/api/cities", async (req, res) => {
+app.get("/cities", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM public.region");
+    const result = await pool.query("SELECT * FROM region");
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error fetching city data");
@@ -307,13 +252,13 @@ app.get("/events", async (req, res) => {
 // });
 
 //Profile endpoint
-app.get("/api/profile", verifyToken, async (req, res) => {
+app.get("/profile", verifyToken, async (req, res) => {
   try {
     const userId = req.userId;
 
     // Fetch user profile details from the database
     const userProfile = await pool.query(
-      "SELECT id, first_name, last_name, email, default_role, avatar, homecity FROM public.person WHERE id = $1",
+      "SELECT id, slack_first_name, slack_last_name, slack_email, default_role, slack_photo_link FROM person WHERE id = $1",
       [userId]
     );
 
@@ -325,13 +270,11 @@ app.get("/api/profile", verifyToken, async (req, res) => {
     // Respond with the user's profile details
     res.status(200).json({
       id: userProfile.rows[0].id,
-      first_name: userProfile.rows[0].first_name,
-      last_name: userProfile.rows[0].last_name,
-      email: userProfile.rows[0].email,
-      default_role: userProfile.rows[0].default_role,
-      avatar: userProfile.rows[0].avatar,
-      homecity: userProfile.rows[0].homecity,
-      roles: req.userRoles,
+      first_name: userProfile.rows[0].slack_first_name,
+      last_name: userProfile.rows[0].slack_last_name,
+      email: userProfile.rows[0].slack_email,
+      // default_role: userProfile.rows[0].default_role_id,
+      avatar: userProfile.rows[0].slack_photo_link,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -340,7 +283,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
 });
 
 // Delete by id from signup classes
-app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
+app.get("/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   try {
     const sessionId = req.params.sessionId;
     const userId = req.userId;
@@ -354,7 +297,7 @@ app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/api/insert-signup", verifyToken, async (req, res) => {
+app.post("/insert-signup", verifyToken, async (req, res) => {
   try {
     const sessionId = req.body.sessionId;
     const userId = req.userId;
@@ -372,7 +315,7 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
 // https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
 
 //Profile endpoint
-app.get("/api/signup-details", verifyToken, async (req, res) => {
+app.get("/signup-details", verifyToken, async (req, res) => {
   const userId = req.userId;
   try {
     const signUpDetails = await getSignUpDetailsFromDatabase(userId);
@@ -385,7 +328,7 @@ app.get("/api/signup-details", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/api/insert-signup", verifyToken, async (req, res) => {
+app.post("/insert-signup", verifyToken, async (req, res) => {
   try {
     const sessionId = req.body.sessionId;
     const userId = req.userId;
@@ -402,35 +345,73 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
 //session table
 app.get("/session", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT session.id, session.date, session.time_start, session.time_end, session.who_leading, session.cohort, session.city, session.location, syllabus.module_name, syllabus.module_week, syllabus.syllabus_link FROM session JOIN syllabus ON session.syllabus_id = syllabus.id;"
-    );
+    const result = await pool.query(`
+      SELECT
+        session.id,
+        session.date,
+        session.time_start,
+        session.time_end,
+        'Barath' AS who_leading,
+        cohort.name AS cohort,
+        'London' AS city,
+        session.location,
+        lesson_content.module AS module_name,
+        lesson_content.week_no AS module_week,
+        lesson_content.syllabus_link
+      FROM session
+      JOIN lesson_content
+      ON session.lesson_content_id = lesson_content.id
+      JOIN cohort
+      ON session.cohort_id = cohort.id;
+    `);
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error fetching session data");
     console.error("Error executing query:", error);
   }
 });
+app.post("/session", async (req, res) => {
+  try {
+    await pool.query(
+      "INSERT INTO session(date, time_start, time_end, event_type, location, lesson_content_id, cohort_id) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      [new Date(), new Date(), new Date(), "Technical Education", "London", 1, 1]
+    );
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+app.post("/lesson_content", async (req, res) => {
+  try {
+    await pool.query(
+      "INSERT INTO lesson_content(module, module_no, week_no, lesson_topic, syllabus_link) VALUES ( $1, $2, $3, $4, $5)",
+      ["Databases", 3, 1, "Test Topic", "codeyourfuture.com"]
+    );
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
 
 //see attendee all voluteer for the session
-app.get("/attendee/:sessionId", async (req, res) => {
+app.get("/attendance/:sessionId", async (req, res) => {
   const sessionId = req.params.sessionId;
   try {
     const result = await pool.query(
-      "SELECT person.first_name, person.last_name, role.role FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session.id WHERE session.id = $1;",
+      "SELECT person.slack_first_name, person.slack_last_name, role.name FROM attendance JOIN person ON attendance.person_id = person.id JOIN role ON attendance.role_id = role.id JOIN session ON attendance.session_id = session.id WHERE session.id = $1;",
       [sessionId]
     );
 
     res.send(result.rows);
   } catch (error) {
-    res.status(500).send("Error fetching attendee data");
+    res.status(500).send("Error fetching attendance data");
     console.error("Error executing query:", error);
   }
 });
 
-app.get("/api/roles", async (req, res) => {
+app.get("/roles", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM public.role");
+    const result = await pool.query("SELECT * FROM role");
 
     const roles = result.rows.map((role) => ({ id: role.id, name: role.role }));
 

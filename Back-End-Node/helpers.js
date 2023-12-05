@@ -4,7 +4,7 @@ const getSignUpDetailsFromDatabase = async (userId) => {
   try {
     // Query to select all sign-up details with id from the table
     const query =
-      "SELECT person.first_name, person.last_name, role.role, session.location FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session.id WHERE person.id = $1";
+      "SELECT person.first_name, person.last_name, role.role, session.location FROM attendance JOIN person ON attendance.person_id = person.id JOIN role ON attendance.role_id = role.id JOIN session ON attendance.session_id = session.id WHERE person.id = $1";
     // Execute the query
     const result = await pool.query(query, [userId]);
     // Return the rows from the result
@@ -19,7 +19,7 @@ const cancelSignUp = async (sessionId, userId) => {
   try {
     //console.log("Canceling sign-up for sessionId:", sessionId, "userId:", userId);
     await pool.query(
-      "DELETE FROM public.attendee WHERE person_id = $1 AND session_id = $2",
+      "DELETE FROM attendance WHERE person_id = $1 AND session_id = $2",
       [userId, sessionId]
     );
 
@@ -32,7 +32,7 @@ const cancelSignUp = async (sessionId, userId) => {
 const insertSignUp = async (sessionId, role, userId) => {
   try {
     await pool.query(
-      "INSERT INTO public.attendee(created_at, person_id, session_id, role_id) VALUES ( $1, $2, $3, $4)",
+      "INSERT INTO attendance(person_id, session_id, role_id) VALUES ( $1, $2, $3, $4)",
       [new Date(), userId, sessionId, role]
     );
   } catch (error) {

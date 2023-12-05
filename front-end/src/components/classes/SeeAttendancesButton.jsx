@@ -15,7 +15,7 @@ const SeeAttendancesButton = (props) => {
      
             }
 
-            const response = await axios.get(`/attendee/${sessionId}`, body);
+            const response = await axios.get(`/attendance/${sessionId}`, body);
 
             if (response.status !== 200) {
                 throw new Error(`HTTP error! Status: ${response.status}`);

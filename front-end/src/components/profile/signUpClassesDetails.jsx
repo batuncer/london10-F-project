@@ -8,7 +8,7 @@ const SignUpClassesDetails = () => {
     useEffect(() => {
         const fetchSignUpDetails = async () => {
             try {
-                const response = await axios.get("api/signup-details");
+                const response = await axios.get("signup-details");
                 console.log(response)
                 const data = response.data;
                 setSignUpDetails(data);
@@ -22,7 +22,7 @@ const SignUpClassesDetails = () => {
 
     const handleCancelSignUp = async (sessionId) => {
         try {
-            await axios.post(`api/cancel-signup/${sessionId}`);
+            await axios.post(`cancel-signup/${sessionId}`);
 
             setSignUpDetails((prevDetails) =>
                 prevDetails.filter((classDetail) => classDetail.id !== sessionId)
