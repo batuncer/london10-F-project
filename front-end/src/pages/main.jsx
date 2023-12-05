@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const url = `http://localhost:10000/session`
+const url = process.env.REACT_APP_BACKEND_URL
 
 const Main = () => {
     const classes = useStyles();
@@ -26,7 +26,7 @@ const Main = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(url);
+                const response = await fetch(`${url}/session`);
                 const result = await response.json();
                 setData(result);
 

@@ -26,7 +26,7 @@ export default function MultipleSelectCheckmarks() {
         // Simulate fetching data from the database
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:10000/api/cities');
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/cities`);
 
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status} - ${response.statusText}`);
