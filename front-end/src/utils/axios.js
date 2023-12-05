@@ -1,6 +1,6 @@
 import axios from "axios";
 // config
-const HOST_API_KEY = "https://localhost:443/"
+const HOST_API_KEY = `${process.env.REACT_APP_BACKEND_URL}`
 
 // ----------------------------------------------------------------------
 
