@@ -17,6 +17,7 @@ const getSignUpDetailsFromDatabase = async (userId) => {
 
 const cancelSignUp = async (sessionId, userId) => {
   try {
+    //console.log("Canceling sign-up for sessionId:", sessionId, "userId:", userId);
     await pool.query(
       "DELETE FROM public.attendee WHERE person_id = $1 AND session_id = $2",
       [userId, sessionId]

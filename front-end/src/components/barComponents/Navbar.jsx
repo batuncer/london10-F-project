@@ -68,7 +68,12 @@ const Navbar = () => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" sx={{ backgroundColor: '#36454f' }}>
+            <AppBar sx={{
+                backgroundColor: '#36454f', position: "fixed", marginTop: "90px", '@media screen and (max-width: 768px)': {
+                    minHeight: '70px',
+                    height: 'auto',
+                    marginTop: '140px',
+                }, }}>
                 <Toolbar>
                     <NavbarFilter />
                     <Search>

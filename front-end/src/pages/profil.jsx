@@ -21,8 +21,9 @@ export default function Profile() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/profile`);
-                console.log(response);
+
+                const response = await axios.get("http://localhost:10000/api/profile");
+                /* console.log(response); */
 
                 if (response.statusText !== "OK") {
                     throw new Error(`HTTP error! Status: ${response.status}`);

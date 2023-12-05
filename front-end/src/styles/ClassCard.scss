@@ -24,11 +24,11 @@
 		min-height: 500px;
 		height: auto;
 		margin: 180px auto;
+		margin-top: 300px;
+
 	}
 
-	@media screen and (max-height: 500px) and (min-width: 992px) {
-		height: 350px;
-	}
+
 
 	&__item {
 		display: flex;
@@ -76,11 +76,9 @@
 		@media screen and (max-width: 768px) {
 			transform: translateY(-50%);
 			width: 90%;
+			margin-top: 50px;
 		}
 
-		@media screen and (max-width: 576px) {
-			width: 95%;
-		}
 
 		@media screen and (max-height: 500px) and (min-width: 1500px) {
 			height: 270px;

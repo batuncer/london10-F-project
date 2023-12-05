@@ -8,7 +8,7 @@ const Create = () => {
   return (
     <>
     <Navbar />
-    <div className="general-form-container">
+    <div className="general-form-container" style={{marginTop: "250px"}}>
       <div className="form-container">
         <LessonForm />
       </div>

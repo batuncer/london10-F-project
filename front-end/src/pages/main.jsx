@@ -42,7 +42,8 @@ const Main = () => {
     return (
 
         <UserGuard>
-            <div className="main-container">
+            <div className="main-container" style={{
+                marginTop: "200px"}}>
                 <Navbar />
                 {data.map((s) => (
                     <ClassCard
