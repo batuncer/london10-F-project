@@ -6,8 +6,8 @@ import { /* specific components or styles */ } from '@material-ui/core';
 const Header = () => {
   return (
     <div>
-      <AppBar position="static" >
-        <Toolbar style={{ backgroundColor: "white" }}>
+      <AppBar position="fixed" >
+        <Toolbar style={{ backgroundColor: "white"}}>
           <img
             src="https://codeyourfuture.io/wp-content/uploads/2019/03/cyf_brand.png"
 
