@@ -30,6 +30,7 @@ const redirect_uri = `${process.env.BACK_END_URL_SLACK}/auth/redirect`;
 const client = new WebClient();
 
 const createToken = (userId, role) => {
+  // TODO: it is confusing at the moment that we are using Slack title as the role here
   const token = jwt.sign({ id: userId, roles: role }, secret, {
     expiresIn: 86400, // expires in 24 hours
   });
@@ -49,70 +50,48 @@ app.get("/auth/redirect", async (req, res) => {
       redirect_uri,
     });
 
-    //console.log("OAuth Response", result);
-
     // Use the token to get user information
     const userProfile = await client.users.profile.get({
       user: result.authed_user.id,
       token: result.authed_user.access_token,
     });
 
-    //console.log("neded", userProfile);
-    // //console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
-      "SELECT * FROM person WHERE email = $1",
+      "SELECT * FROM person WHERE slack_email = $1",
       [userProfile["profile"]["email"]]
     );
 
-    let avatar = userProfile["profile"]["image_original"];
-    let defaultRole = userProfile["profile"]["title"];
     let jwtToken = "";
 
     if (existingUser.rows.length > 0) {
-      //console.log(existingUser);
-      //Login Bussiness
       jwtToken = createToken(
         existingUser.rows[0]["id"],
-        existingUser.rows[0]["default_role"]
+        existingUser.rows[0]["slack_title"]  // TODO: weird that title = jwt role
       );
 
-      // Update avatar if it has changed
-      if (existingUser.rows[0]["avatar"] !== avatar) {
-        await pool.query("UPDATE person SET avatar = $1 WHERE id = $2", [
-          avatar,
-          existingUser.rows[0]["id"],
-        ]);
-      }
-      // Update the default_role if it has changed
-      if (
-        existingUser.rows[0]["default_role"] !== "admin" &&
-        existingUser.rows[0]["default_role"] !== defaultRole
-      ) {
-        await pool.query(
-          "UPDATE person SET default_role = $1 WHERE id = $2",
-          [defaultRole, existingUser.rows[0]["id"]]
-        );
-      }
-
+      // TODO: update values if changed
+      // // Update avatar if it has changed
+      // if (existingUser.rows[0]["avatar"] !== userProfile["profile"]["image_original"]) {
+      //   await pool.query("UPDATE person SET avatar = $1 WHERE id = $2", [
+      //     userProfile["profile"]["image_original"],
+      //     existingUser.rows[0]["id"],
+      //   ]);
+      // }
     } else {
       // Insert the new user into the database
       var insertResult = await pool.query(
-        "INSERT INTO person (created_at, homecity, default_role, email, first_name, last_name, avatar) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, default_role",
+        "INSERT INTO person (slack_photo_link, slack_firstname, slack_lastname, slack_email, slack_title) VALUES ($1, $2, $3, $4, $5) RETURNING id, slack_title",
         [
-          new Date(),
-          "London",
-          userProfile["profile"]["title"],
-          userProfile["profile"]["email"],
+          userProfile["profile"]["image_original"],
           userProfile["profile"]["first_name"],
           userProfile["profile"]["last_name"],
-          avatar,
+          userProfile["profile"]["email"],
+          userProfile["profile"]["title"],
         ]
       );
-
-      //login bussiness
       jwtToken = createToken(
         insertResult.rows[0]["id"],
-        insertResult.rows[0]["default_role"]
+        insertResult.rows[0]["slack_title"]  // TODO: weird that title = jwt role
       );
     }
 
@@ -138,43 +117,6 @@ if (process.env.LOCAL_DEVELOPMENT) {
   //console.log("PRODUCT");
   https.createServer(options, app).listen(10000);
 }
-
-////sign up
-// app.post("/api/signup", async (req, res) => {
-//   try {
-//     const { first_name, last_name, email, password, city, role } = req.body;
-
-//     // Check if the user already exists
-//     const existingUser = await pool.query(
-//       "SELECT * FROM users WHERE email = $1",
-//       [email]
-//     );
-
-//     if (existingUser.rows.length > 0) {
-//       return res
-//         .status(400)
-//         .json({ error: "User with this email already exists." });
-//     }
-
-//     // Hash the password
-//     const saltRounds = 10;
-//     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-//     // Insert the new user into the database
-//     const insertResult = await pool.query(
-//       "INSERT INTO person (first_name, last_name, email, password, homecity, default_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-//       [first_name, last_name, email, hashedPassword, city, role]
-//     );
-//     const jwtToken = createToken(insertResult.rows[0]["id"]);
-
-//     res
-//       .status(201)
-//       .json({ message: "User registered successfully.", token: jwtToken });
-//   } catch (error) {
-//     console.error("Error during user registration:", error);
-//     res.status(500).json({ error: "Something went wrong." });
-//   }
-// });
 
 //cities
 app.get("/api/cities", async (req, res) => {
@@ -316,7 +258,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
 
     // Fetch user profile details from the database
     const userProfile = await pool.query(
-      "SELECT id, first_name, last_name, email, default_role, avatar, homecity FROM person WHERE id = $1",
+      "SELECT id, slack_first_name, slack_last_name, slack_email, default_role, slack_photo_link FROM person WHERE id = $1",
       [userId]
     );
 
@@ -328,13 +270,11 @@ app.get("/api/profile", verifyToken, async (req, res) => {
     // Respond with the user's profile details
     res.status(200).json({
       id: userProfile.rows[0].id,
-      first_name: userProfile.rows[0].first_name,
-      last_name: userProfile.rows[0].last_name,
-      email: userProfile.rows[0].email,
-      default_role: userProfile.rows[0].default_role,
-      avatar: userProfile.rows[0].avatar,
-      homecity: userProfile.rows[0].homecity,
-      roles: req.userRoles,
+      first_name: userProfile.rows[0].slack_first_name,
+      last_name: userProfile.rows[0].slack_last_name,
+      email: userProfile.rows[0].slack_email,
+      // default_role: userProfile.rows[0].default_role_id,
+      avatar: userProfile.rows[0].slack_photo_link,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -420,7 +360,7 @@ app.get("/attendee/:sessionId", async (req, res) => {
   const sessionId = req.params.sessionId;
   try {
     const result = await pool.query(
-      "SELECT person.first_name, person.last_name, role.role FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session.id WHERE session.id = $1;",
+      "SELECT person.slack_first_name, person.slack_last_name, role.name FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session.id WHERE session.id = $1;",
       [sessionId]
     );
 
