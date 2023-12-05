@@ -8,7 +8,7 @@ const SignUpClassesDetails = () => {
         const fetchSignUpDetails = async () => {
             try {
                 // Fetch sign-up details from your backend
-                const response = await axios.get("/api/signup-details");
+                const response = await axios.get("api/signup-details");
                 const data = response.data;
                 setSignUpDetails(data);
             } catch (error) {
@@ -22,7 +22,7 @@ const SignUpClassesDetails = () => {
     const handleCancelSignUp = async (sessionId) => {
         try {
             // Send a request to cancel sign-up for the specified class
-            await axios.post(`/api/cancel-signup/${sessionId}`);
+            await axios.post(`api/cancel-signup/${sessionId}`);
 
             // Update the local state to reflect the changes
             setSignUpDetails((prevDetails) =>
@@ -37,7 +37,7 @@ const SignUpClassesDetails = () => {
             {signUpDetails.length > 0 ? (
                 signUpDetails.map((attendance) => (
                     <div key={attendance.id} style={{ display: "inline-block", margin: "10px", padding: "10px", border: "1px solid #ccc" }}>
-                        {attendance.role} - {attendance.period}
+                        {attendance.role} -- {attendance.location}
                         <button onClick={() => handleCancelSignUp(attendance.id)}>
                             Cancel
                         </button>

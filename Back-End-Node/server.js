@@ -339,15 +339,15 @@ app.get("/api/profile", verifyToken, async (req, res) => {
   }
 });
 
-app.get("/api/signup-details", verifyToken, async (req, res) => {
-  try {
-    const signUpDetails = await getSignUpDetailsFromDatabase();
-    res.json(signUpDetails);
-  } catch (error) {
-    console.error("Error fetching sign-up details:", error);
-    res.status(500).json({ error: "Something went wrong." });
-  }
-});
+// app.get("/api/signup-details", verifyToken, async (req, res) => {
+//   try {
+//     const signUpDetails = await getSignUpDetailsFromDatabase();
+//     res.json(signUpDetails);
+//   } catch (error) {
+//     console.error("Error fetching sign-up details:", error);
+//     res.status(500).json({ error: "Something went wrong." });
+//   }
+// });
 
 // Delete by id from signup classes
 app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
@@ -383,9 +383,12 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
 
 //Profile endpoint
 app.get("/api/signup-details", verifyToken, async (req, res) => {
+  const userId = req.userId;
   try {
-    const signUpDetails = await getSignUpDetailsFromDatabase();
-    res.json(signUpDetails);
+    const signUpDetails = await getSignUpDetailsFromDatabase(userId);
+    console.log(signUpDetails)
+    res.json(signUpDetails.rows);
+    
   } catch (error) {
     console.error("Error fetching sign-up details:", error);
     res.status(500).json({ error: "Something went wrong." });
