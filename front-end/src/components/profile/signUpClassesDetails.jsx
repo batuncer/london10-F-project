@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios"
+import "../../styles/Profile.scss"
 
 const SignUpClassesDetails = () => {
     const [signUpDetails, setSignUpDetails] = useState([]);
@@ -33,10 +34,10 @@ const SignUpClassesDetails = () => {
         }
     };
     return (
-        <div>
+        <div className="registered-classes-container">
             {signUpDetails.length > 0 ? (
                 signUpDetails.map((attendance) => (
-                    <div key={attendance.id} style={{ display: "inline-block", margin: "10px", padding: "10px", border: "1px solid #ccc" }}>
+                    <div className="registered-classes" key={attendance.id} style={{ display: "inline-block", margin: "10px", padding: "10px", border: "1px solid #ccc" }}>
                         {attendance.role} -- {attendance.location}
                         <button onClick={() => handleCancelSignUp(attendance.id)}>
                             Cancel
