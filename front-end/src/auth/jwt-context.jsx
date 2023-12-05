@@ -80,7 +80,7 @@ export function AuthProvider({ children }) {
 
             if (accessToken) {
                 setSession(accessToken);
-                const user = {}
+                const user = JSON.parse(atob(accessToken.split('.')[1]));
                 dispatch({
                     type: TYPE_INITIALIZE,
                     payload: {
@@ -123,8 +123,10 @@ export function AuthProvider({ children }) {
 
     // LOGIN
     const loginWithSlack = async (token) => {
-        const user = {}
+
         setSession(token);
+        const user = JSON.parse(atob(token.split('.')[1]));
+
         dispatch({
             type: TYPE_LOGIN,
             payload: {

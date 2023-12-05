@@ -26,7 +26,7 @@ function verifyAdminToken(req, res, next) {
         .send({ auth: false, message: "Failed to authenticate token." });
 
     console.log(decoded.roles);
-    if (decoded.roles != null && !decoded.roles.includes("Admin"))
+    if (decoded.roles != null && !decoded.roles == "admin")
       return res
         .status(403)
         .send({ auth: false, message: "No token provided for admin." });

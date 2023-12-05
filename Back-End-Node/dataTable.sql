@@ -21,7 +21,6 @@ CREATE TABLE person (
     slack_photo_link VARCHAR(250),
     slack_username VARCHAR(250),
     slack_email VARCHAR(250),
-    slack_token VARCHAR(250),
     default_cohort_id INT REFERENCES cohort(id),
     default_role_id INT REFERENCES role(id)
 );

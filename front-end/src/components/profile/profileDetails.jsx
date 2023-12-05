@@ -1,5 +1,5 @@
 import React from "react";
-import SignUpClasses from "./signUpClasses";
+import SignUpClassesDetails from "./signUpClassesDetails";
 
 const ProfileDetails = ({ user }) => (
   <div className="profile-details">
@@ -8,7 +8,7 @@ const ProfileDetails = ({ user }) => (
       <table>
         <tbody>
           <tr>
-            <td>Full Name :</td>
+            <td>Name :</td>
             <td>{`${user.first_name} ${user.last_name}`}</td>
           </tr>
           <tr>
@@ -27,7 +27,7 @@ const ProfileDetails = ({ user }) => (
       </table>
     </div>
     <div className="right-container">
-      <SignUpClasses />
+      <SignUpClassesDetails  />
     </div>
   </div>
 );

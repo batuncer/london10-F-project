@@ -8,21 +8,11 @@ import Admin from "../pages/Admin"
 import Profile from "../pages/profil";
 
 
-// const login = ({params}) => {
-//   console.log(params);
-  
-//   useEffect(() => {
-//     localStorage.setItem('jwt', params.code);
-//   }, [])
-
-//   return (<Redirect href=/ />)
-// }
 
 const MainRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<SignUp />} />
-
       <Route path="/main" element={<Main />} />
       <Route path="/login" element={<Login />} />
       <Route path="/admin" element={<Admin />} />
