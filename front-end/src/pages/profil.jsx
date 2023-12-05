@@ -21,6 +21,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
+
                 const response = await axios.get("http://localhost:10000/api/profile");
                 /* console.log(response); */
 
