@@ -119,7 +119,7 @@ if (process.env.LOCAL_DEVELOPMENT) {
 }
 
 //cities
-app.get("/api/cities", async (req, res) => {
+app.get("/cities", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM region");
     res.send(result.rows);
@@ -252,7 +252,7 @@ app.get("/events", async (req, res) => {
 // });
 
 //Profile endpoint
-app.get("/api/profile", verifyToken, async (req, res) => {
+app.get("/profile", verifyToken, async (req, res) => {
   try {
     const userId = req.userId;
 
@@ -283,7 +283,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
 });
 
 // Delete by id from signup classes
-app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
+app.get("/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   try {
     const sessionId = req.params.sessionId;
     const userId = req.userId;
@@ -297,7 +297,7 @@ app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/api/insert-signup", verifyToken, async (req, res) => {
+app.post("/insert-signup", verifyToken, async (req, res) => {
   try {
     const sessionId = req.body.sessionId;
     const userId = req.userId;
@@ -315,7 +315,7 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
 // https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
 
 //Profile endpoint
-app.get("/api/signup-details", verifyToken, async (req, res) => {
+app.get("/signup-details", verifyToken, async (req, res) => {
   const userId = req.userId;
   try {
     const signUpDetails = await getSignUpDetailsFromDatabase(userId);
@@ -328,7 +328,7 @@ app.get("/api/signup-details", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/api/insert-signup", verifyToken, async (req, res) => {
+app.post("/insert-signup", verifyToken, async (req, res) => {
   try {
     const sessionId = req.body.sessionId;
     const userId = req.userId;
@@ -345,33 +345,71 @@ app.post("/api/insert-signup", verifyToken, async (req, res) => {
 //session table
 app.get("/session", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT session.id, session.date, session.time_start, session.time_end, session.who_leading, session.cohort, session.city, session.location, syllabus.module_name, syllabus.module_week, syllabus.syllabus_link FROM session JOIN syllabus ON session.syllabus_id = syllabus.id;"
-    );
+    const result = await pool.query(`
+      SELECT
+        session.id,
+        session.date,
+        session.time_start,
+        session.time_end,
+        'Barath' AS who_leading,
+        cohort.name AS cohort,
+        'London' AS city,
+        session.location,
+        lesson_content.module AS module_name,
+        lesson_content.week_no AS module_week,
+        lesson_content.syllabus_link
+      FROM session
+      JOIN lesson_content
+      ON session.lesson_content_id = lesson_content.id
+      JOIN cohort
+      ON session.cohort_id = cohort.id;
+    `);
     res.send(result.rows);
   } catch (error) {
     res.status(500).send("Error fetching session data");
     console.error("Error executing query:", error);
   }
 });
+app.post("/session", async (req, res) => {
+  try {
+    await pool.query(
+      "INSERT INTO session(date, time_start, time_end, event_type, location, lesson_content_id, cohort_id) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      [new Date(), new Date(), new Date(), "Technical Education", "London", 1, 1]
+    );
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+app.post("/lesson_content", async (req, res) => {
+  try {
+    await pool.query(
+      "INSERT INTO lesson_content(module, module_no, week_no, lesson_topic, syllabus_link) VALUES ( $1, $2, $3, $4, $5)",
+      ["Databases", 3, 1, "Test Topic", "codeyourfuture.com"]
+    );
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
 
 //see attendee all voluteer for the session
-app.get("/attendee/:sessionId", async (req, res) => {
+app.get("/attendance/:sessionId", async (req, res) => {
   const sessionId = req.params.sessionId;
   try {
     const result = await pool.query(
-      "SELECT person.slack_first_name, person.slack_last_name, role.name FROM attendee JOIN person ON attendee.person_id = person.id JOIN role ON attendee.role_id = role.id JOIN session ON attendee.session_id = session.id WHERE session.id = $1;",
+      "SELECT person.slack_first_name, person.slack_last_name, role.name FROM attendance JOIN person ON attendance.person_id = person.id JOIN role ON attendance.role_id = role.id JOIN session ON attendance.session_id = session.id WHERE session.id = $1;",
       [sessionId]
     );
 
     res.send(result.rows);
   } catch (error) {
-    res.status(500).send("Error fetching attendee data");
+    res.status(500).send("Error fetching attendance data");
     console.error("Error executing query:", error);
   }
 });
 
-app.get("/api/roles", async (req, res) => {
+app.get("/roles", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM role");
 

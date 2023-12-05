@@ -138,7 +138,7 @@ export function AuthProvider({ children }) {
 
     // REGISTER
     const register = async (email, password, first_name, last_name, location, role) => {
-        const response = await axios.post('api/signup', {
+        const response = await axios.post('signup', {
             email,
             password,
             first_name,

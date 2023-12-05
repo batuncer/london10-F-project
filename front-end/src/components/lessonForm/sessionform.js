@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import EditableField from "./EditableField";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axios from '../../utils/axios';
 
 
 const module = ["HTML", "CSS", "JS1", "JS2", "JS3", "Node.js", "SQL"];
@@ -18,8 +19,9 @@ const lesson = [
 ];
 
 export default function SessionForm() {
-  function submitForm() {
+  async function submitForm() {
     console.log("Form submitted");
+    const response = await axios.post("session", {});
   }
 
   const [inputValue, setInputValue] = useState("");
