@@ -49,7 +49,7 @@ app.get("/auth/redirect", async (req, res) => {
       redirect_uri,
     });
 
-    console.log("OAuth Response", result);
+    //console.log("OAuth Response", result);
 
     // Use the token to get user information
     const userProfile = await client.users.profile.get({
@@ -57,8 +57,8 @@ app.get("/auth/redirect", async (req, res) => {
       token: result.authed_user.access_token,
     });
 
-    console.log("neded", userProfile);
-    // console.log("User Data", userDataResponse);
+    //console.log("neded", userProfile);
+    // //console.log("User Data", userDataResponse);
     const existingUser = await pool.query(
       "SELECT * FROM public.person WHERE email = $1",
       [userProfile["profile"]["email"]]
@@ -86,7 +86,7 @@ app.get("/auth/redirect", async (req, res) => {
     let jwtToken = "";
 
     if (existingUser.rows.length > 0) {
-      console.log(existingUser);
+      //console.log(existingUser);
       //Login Bussiness
       jwtToken = createToken(
         existingUser.rows[0]["id"],
@@ -132,7 +132,7 @@ if (process.env.LOCAL_DEVELOPMENT) {
   http.createServer(app).listen(10000);
 } else {
   // when we deploy on Vercel, Vercel adds HTTPS for us, so we can just use one port
-  console.log("PRODUCT");
+  //console.log("PRODUCT");
   https.createServer(options, app).listen(10000);
 }
 
@@ -185,7 +185,7 @@ app.get("/api/cities", async (req, res) => {
 });
 
 app.get("/create-event", async (req, res) => {
-  console.log(calendar);
+  //console.log(calendar);
   let newEvent = {
     summary: "hello world",
     location: "London, UK",
@@ -231,20 +231,20 @@ app.get("/events", async (req, res) => {
 
     const events = calendarResponse.data.items;
     if (!events || events.length === 0) {
-      console.log("No upcoming events found.");
+      //console.log("No upcoming events found.");
       res.status(404).send("No upcoming events found.");
       return;
     }
 
-    console.log("Upcoming 10 events:");
+    //console.log("Upcoming 10 events:");
     events.forEach((event, i) => {
       const start = event.start.dateTime || event.start.date;
-      console.log(`${start} - ${event.summary}`);
+      //console.log(`${start} - ${event.summary}`);
     });
 
     res.status(200).json(events);
   } catch (error) {
-    console.error("Error fetching events:", error);
+    //console.error("Error fetching events:", error);
     res.status(500).send("Error fetching events");
   }
 });
@@ -339,22 +339,12 @@ app.get("/api/profile", verifyToken, async (req, res) => {
   }
 });
 
-// app.get("/api/signup-details", verifyToken, async (req, res) => {
-//   try {
-//     const signUpDetails = await getSignUpDetailsFromDatabase();
-//     res.json(signUpDetails);
-//   } catch (error) {
-//     console.error("Error fetching sign-up details:", error);
-//     res.status(500).json({ error: "Something went wrong." });
-//   }
-// });
-
 // Delete by id from signup classes
 app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   try {
     const sessionId = req.params.sessionId;
     const userId = req.userId;
-
+    console.log(sessionId, "  and  ", userId)
     await cancelSignUp(sessionId, userId);
 
     res.json({ success: true });
@@ -386,26 +376,11 @@ app.get("/api/signup-details", verifyToken, async (req, res) => {
   const userId = req.userId;
   try {
     const signUpDetails = await getSignUpDetailsFromDatabase(userId);
-    console.log(signUpDetails)
+    //console.log(signUpDetails)
     res.json(signUpDetails.rows);
     
   } catch (error) {
     console.error("Error fetching sign-up details:", error);
-    res.status(500).json({ error: "Something went wrong." });
-  }
-});
-
-// Delete by id from signup classes
-app.get("/api/cancel-signup/:sessionId", verifyToken, async (req, res) => {
-  try {
-    const sessionId = req.params.sessionId;
-    const userId = req.userId;
-
-    await cancelSignUp(sessionId, userId);
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error canceling sign-up:", error);
     res.status(500).json({ error: "Something went wrong." });
   }
 });

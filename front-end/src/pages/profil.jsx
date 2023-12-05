@@ -22,7 +22,7 @@ export default function Profile() {
         const fetchUserData = async () => {
             try {
                 const response = await axios.get("http://localhost:10000/api/profile");
-                console.log(response);
+                /* console.log(response); */
 
                 if (response.statusText !== "OK") {
                     throw new Error(`HTTP error! Status: ${response.status}`);

@@ -8,8 +8,8 @@ const SignUpClassesDetails = () => {
     useEffect(() => {
         const fetchSignUpDetails = async () => {
             try {
-                // Fetch sign-up details from your backend
                 const response = await axios.get("api/signup-details");
+                console.log(response)
                 const data = response.data;
                 setSignUpDetails(data);
             } catch (error) {
@@ -22,10 +22,8 @@ const SignUpClassesDetails = () => {
 
     const handleCancelSignUp = async (sessionId) => {
         try {
-            // Send a request to cancel sign-up for the specified class
             await axios.post(`api/cancel-signup/${sessionId}`);
 
-            // Update the local state to reflect the changes
             setSignUpDetails((prevDetails) =>
                 prevDetails.filter((classDetail) => classDetail.id !== sessionId)
             );
@@ -33,12 +31,14 @@ const SignUpClassesDetails = () => {
             console.error("Error canceling sign-up:", error);
         }
     };
+
     return (
         <div className="registered-classes-container">
             {signUpDetails.length > 0 ? (
                 signUpDetails.map((attendance) => (
                     <div className="registered-classes" key={attendance.id} style={{ display: "inline-block", margin: "10px", padding: "10px", border: "1px solid #ccc" }}>
-                        {attendance.role} -- {attendance.location}
+                        {attendance.role} -- {attendance.location} --- {attendance.first_name}
+                        {/* {console.log(attendance)} */}
                         <button onClick={() => handleCancelSignUp(attendance.id)}>
                             Cancel
                         </button>
