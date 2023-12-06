@@ -1,10 +1,10 @@
 const { pool } = require("./dbConfig");
 
-const getSignUpDetailsFromDatabase = async (userId) => {
+const getSignUpDetailsFromDatabase = async (userId, sessionId) => {
   try {
     // Query to select all sign-up details with id from the table
     const query =
-      "SELECT person.first_name, person.last_name, role.role, session.location FROM attendance JOIN person ON attendance.person_id = person.id JOIN role ON attendance.role_id = role.id JOIN session ON attendance.session_id = session.id WHERE person.id = $1";
+      "SELECT person.slack_firstname, person.slack_lastname, role.name, session.location, attendance.session_id FROM attendance JOIN person ON attendance.person_id = person.id JOIN role ON attendance.role_id = role.id JOIN session ON attendance.session_id = session.id WHERE person.id = $1";
     // Execute the query
     const result = await pool.query(query, [userId]);
     // Return the rows from the result
@@ -32,8 +32,8 @@ const cancelSignUp = async (sessionId, userId) => {
 const insertSignUp = async (sessionId, role, userId) => {
   try {
     await pool.query(
-      "INSERT INTO attendance(person_id, session_id, role_id) VALUES ( $1, $2, $3, $4)",
-      [new Date(), userId, sessionId, role]
+      "INSERT INTO attendance(person_id, session_id, role_id) VALUES ( $1, $2, $3)",
+      [userId, sessionId, role]
     );
   } catch (error) {
     console.error("Error insetr  sign-up:", error);
