@@ -41,11 +41,15 @@ const EditableField = ({ options }, name, type) => {
           >
             Select or press "+" to add an option
           </option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+          {options ? (
+            options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))
+          ) : (
+            <option value=""></option>
+          )}
         </select>
       )}
       <button className="plusButton" type="button" onClick={handleDoubleClick}>

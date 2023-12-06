@@ -16,9 +16,9 @@ export default function LessonForm() {
       const response = await axios.get("lesson_content");
       setModule_no(response.data.map((item) => item.module_no));
       setModule(response.data.map(item => item.module));
-      setWeek_no(response.data.module_no);
-      setTopic(response.data.lesson_topic);
-      setLink(response.data.syllabus_link);
+      setWeek_no(response.data.map(item => item.week_no));
+      setTopic(response.data.map(item => item.lesson_topic));
+      setLink(response.data.map(item => item.syllabus_link));
       }
       catch (error){
         console.log(error)
@@ -30,9 +30,9 @@ export default function LessonForm() {
 
   async function submitForm() {
     console.log("Form submitted");
-    // TODO: call POST /session with actual data
+       
     try{
-      const response = await axios.post("lesson_content", {module: module,
+      const response = await axios.post("/lesson_content", {module: module,
     module_no: module_no,
     week_no: week_no,
     lesson_topic: topic,

@@ -21,10 +21,10 @@ const lesson = [
 export default function SessionForm() {
   async function submitForm() {
     console.log("Form submitted");
-    const response = await axios.post("session", {});
+    const response = await axios.post("/session", {});
   }
 
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("Saturday Session");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
 
@@ -44,7 +44,6 @@ export default function SessionForm() {
               type="text"
               name="event_name"
               value={inputValue}
-              // defaultValue="Saturday Session"
               onChange={handleInputChange}
               autoFocus
             />

@@ -362,7 +362,7 @@ app.get("/session", async (req, res) => {
   }
 });
 
-app.post("/session", async (req, res) => {
+app.post("/session", verifyToken, async (req, res) => {
   try {
     await pool.query(
       "INSERT INTO session(date, time_start, time_end, event_type, location, lesson_content_id, cohort_id) VALUES ($1, $2, $3, $4, $5, $6, $7)",
@@ -374,6 +374,7 @@ app.post("/session", async (req, res) => {
   }
 });
 
+
 app.get("/lesson_content", async (req,res) => {
   try {
     const result = await pool.query(
@@ -382,15 +383,16 @@ app.get("/lesson_content", async (req,res) => {
     res.send(result.rows)
   }
   catch (error) {
-    res.status(500).json({ error: "Something went wrong." });
+    res.status(500).send(error);
   }
 });
 
-app.post("/lesson_content", async (req, res) => {
+app.post("/lesson_content", verifyToken, async (req, res) => {
   try {
+    const { module, module_no, week_no, lesson_topic, syllabus_link } = req.body;
     await pool.query(
-      "INSERT INTO lesson_content(module, module_no, week_no, lesson_topic, syllabus_link) VALUES ( $1, $2, $3, $4, $5)",
-      ["Databases", 3, 1, "Test Topic", "codeyourfuture.com"]
+      "INSERT INTO lesson_content(module, module_no, week_no, lesson_topic, syllabus_link) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (module, module_no, week_no) DO UPDATE SET lesson_topic = $4, syllabus_link = $5",
+      [module, module_no, week_no, lesson_topic, syllabus_link]
     );
     res.json({ success: true });
   } catch (error) {
