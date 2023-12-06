@@ -258,7 +258,7 @@ app.get("/profile", verifyToken, async (req, res) => {
 
     // Fetch user profile details from the database
     const userProfile = await pool.query(
-      "SELECT id, slack_first_name, slack_last_name, slack_email, default_role, slack_photo_link FROM person WHERE id = $1",
+      "SELECT id, slack_firstname, slack_lastname, slack_email, slack_title, slack_photo_link FROM person WHERE id = $1",
       [userId]
     );
 
@@ -270,11 +270,11 @@ app.get("/profile", verifyToken, async (req, res) => {
     // Respond with the user's profile details
     res.status(200).json({
       id: userProfile.rows[0].id,
-      first_name: userProfile.rows[0].slack_first_name,
-      last_name: userProfile.rows[0].slack_last_name,
+      slack_firstname: userProfile.rows[0].slack_firstname,
+      slack_lastname: userProfile.rows[0].slack_lastname,
       email: userProfile.rows[0].slack_email,
-      // default_role: userProfile.rows[0].default_role_id,
-      avatar: userProfile.rows[0].slack_photo_link,
+      slack_title: userProfile.rows[0].slack_title,
+      slack_photo_link: userProfile.rows[0].slack_photo_link,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -297,28 +297,15 @@ app.get("/cancel-signup/:sessionId", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/insert-signup", verifyToken, async (req, res) => {
-  try {
-    const sessionId = req.body.sessionId;
-    const userId = req.userId;
-    const role = req.body.role;
-
-    await insertSignUp(sessionId, role, userId);
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error insert sign-up:", error);
-    res.status(500).json({ error: "Something went wrong." });
-  }
-});
-
 // fixes "No exports found in module" error
 // https://stackoverflow.com/questions/75565239/no-exports-found-in-module-error-when-deploying-express-rest-api-on-vercel
 
 //Profile endpoint
 app.get("/signup-details", verifyToken, async (req, res) => {
   const userId = req.userId;
+  const sessionId = req.body.sessionId
   try {
-    const signUpDetails = await getSignUpDetailsFromDatabase(userId);
+    const signUpDetails = await getSignUpDetailsFromDatabase(userId, sessionId);
     //console.log(signUpDetails)
     res.json(signUpDetails.rows);
     
@@ -333,6 +320,10 @@ app.post("/insert-signup", verifyToken, async (req, res) => {
     const sessionId = req.body.sessionId;
     const userId = req.userId;
     const role = req.body.role;
+    console.log("AsessionId:: ", sessionId)
+    console.log("AuserId:: ", userId)
+    console.log("role:: ", role)
+
 
     await insertSignUp(sessionId, role, userId);
     res.json({ success: true });
@@ -413,7 +404,7 @@ app.get("/roles", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM role");
 
-    const roles = result.rows.map((role) => ({ id: role.id, name: role.role }));
+    const roles = result.rows.map((role) => ({ id: role.id, name: role.name }));
 
     res.json(roles);
   } catch (error) {

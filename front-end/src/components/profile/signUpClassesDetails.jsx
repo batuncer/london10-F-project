@@ -12,6 +12,7 @@ const SignUpClassesDetails = () => {
                 console.log(response)
                 const data = response.data;
                 setSignUpDetails(data);
+                {console.log("data::", data)}
             } catch (error) {
                 console.error("Error fetching sign-up details:", error);
             }
@@ -22,10 +23,10 @@ const SignUpClassesDetails = () => {
 
     const handleCancelSignUp = async (sessionId) => {
         try {
-            await axios.post(`cancel-signup/${sessionId}`);
+            await axios.get(`cancel-signup/${sessionId}`);
 
             setSignUpDetails((prevDetails) =>
-                prevDetails.filter((classDetail) => classDetail.id !== sessionId)
+                prevDetails.filter((classDetail) => classDetail.session_id !== sessionId)            
             );
         } catch (error) {
             console.error("Error canceling sign-up:", error);
@@ -37,9 +38,8 @@ const SignUpClassesDetails = () => {
             {signUpDetails.length > 0 ? (
                 signUpDetails.map((attendance) => (
                     <div className="registered-classes" key={attendance.id} style={{ display: "inline-block", margin: "10px", padding: "10px", border: "1px solid #ccc" }}>
-                        {attendance.role} -- {attendance.location} --- {attendance.first_name}
-                        {/* {console.log(attendance)} */}
-                        <button onClick={() => handleCancelSignUp(attendance.id)}>
+                        {attendance.name} -- {attendance.location} 
+                        <button onClick={() => handleCancelSignUp(attendance.session_id)}>
                             Cancel
                         </button>
                     </div>

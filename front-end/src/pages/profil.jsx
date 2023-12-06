@@ -8,10 +8,11 @@ import { useAuthContext } from "../auth/useAutContext";
 
 export default function Profile() {
     const [user, setUser] = useState({
-        first_name: "",
-        last_name: "",
-        city: "",
+        slack_firstname: "",
+        slack_lastname: "",
         default_role: "",
+        slack_photo_link: "",
+        slack_title: "",
     });
 
     const [loading, setLoading] = useState(true);
@@ -30,6 +31,7 @@ export default function Profile() {
                 }
 
                 const userData = response.data;
+                console.log("user data:::",userData)
                 setUser(userData);
                 setLoading(false);
                 setError(null);
