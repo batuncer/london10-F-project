@@ -2,25 +2,45 @@ import { useState, useEffect } from "react";
 import EditableField from "./EditableField";
 import axios from '../../utils/axios';
 
-const module_no = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-const module = ["HTML", "CSS", "JS1", "JS2", "JS3", "Node.js", "SQL"];
-const week_no = [1, 2, 3, 4, 5];
-const topic = ["HTML", "CSS", "JS1", "JS2", "JS3", "Node.js", "SQL"];
-const link = [
-  "HTML_link",
-  "CSS_link",
-  "JS1_link",
-  "JS2_link",
-  "JS3_link",
-  "Node.js_link",
-  "SQL_link",
-];
 
 export default function LessonForm() {
+  const [module_no, setModule_no] = useState([]);
+  const [module, setModule] = useState([]);
+  const [week_no, setWeek_no] = useState([]);
+  const [topic, setTopic] = useState([]);
+  const [link, setLink] = useState([]);
+
+  useEffect(() => {
+    async function fetchData () {
+      try {
+      const response = await axios.get("lesson_content");
+      setModule_no(response.data.map((item) => item.module_no));
+      setModule(response.data.map(item => item.module));
+      setWeek_no(response.data.module_no);
+      setTopic(response.data.lesson_topic);
+      setLink(response.data.syllabus_link);
+      }
+      catch (error){
+        console.log(error)
+      }
+    }
+    fetchData();
+  }, [])
+  
+
   async function submitForm() {
     console.log("Form submitted");
     // TODO: call POST /session with actual data
-    const response = await axios.post("lesson_content", {});
+    try{
+      const response = await axios.post("lesson_content", {module: module,
+    module_no: module_no,
+    week_no: week_no,
+    lesson_topic: topic,
+    syllabus_link: link});
+    }
+    catch (error){
+      console.log(error)
+    }
   }
 
   return (

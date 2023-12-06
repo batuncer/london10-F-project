@@ -361,6 +361,7 @@ app.get("/session", async (req, res) => {
     console.error("Error executing query:", error);
   }
 });
+
 app.post("/session", async (req, res) => {
   try {
     await pool.query(
@@ -372,6 +373,19 @@ app.post("/session", async (req, res) => {
     res.status(500).json({ error: "Something went wrong." });
   }
 });
+
+app.get("/lesson_content", async (req,res) => {
+  try {
+    const result = await pool.query(
+      "Select * from lesson_content"
+    )
+    res.send(result.rows)
+  }
+  catch (error) {
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
 app.post("/lesson_content", async (req, res) => {
   try {
     await pool.query(

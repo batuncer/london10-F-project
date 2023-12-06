@@ -44,7 +44,7 @@ export default function SessionForm() {
               type="text"
               name="event_name"
               value={inputValue}
-              defaultValue="Saturday Session"
+              // defaultValue="Saturday Session"
               onChange={handleInputChange}
               autoFocus
             />
