@@ -1,11 +1,11 @@
 CREATE TABLE region (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
+    name VARCHAR(100) UNIQUE
 );
 
 CREATE TABLE cohort (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
+    name VARCHAR(100) UNIQUE,
     google_calendar_url varchar(250),
     region_id INT REFERENCES region(id)
 );
@@ -13,7 +13,7 @@ CREATE TABLE cohort (
 CREATE TABLE role (
     -- e.g. Zoom Master, Tech Ed Assistant, Personal Development Lead
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
+    name VARCHAR(100) UNIQUE
 );
 
 CREATE TABLE person (
@@ -21,10 +21,10 @@ CREATE TABLE person (
     slack_photo_link VARCHAR(250),
     slack_firstname VARCHAR(250),
     slack_lastname VARCHAR(250),
-    slack_email VARCHAR(250),
+    slack_email VARCHAR(250) UNIQUE,
     slack_title VARCHAR(250),
-    default_cohort_id INT REFERENCES cohort(id),
-    default_role_id INT REFERENCES role(id)
+    default_cohort_id INT REFERENCES cohort(id),  -- we do not use this at the moment, but it could be useful when viewing all classes
+    default_role_id INT REFERENCES role(id)  -- we do not use this at the moment, but it could be useful when signing up to a class
 );
 
 CREATE TABLE lesson_content (
@@ -54,3 +54,7 @@ CREATE TABLE attendance (
     session_id INT REFERENCES session(id),
     role_id INT REFERENCES role(id)
 );
+
+INSERT INTO region (name) VALUES (Glasgow);
+INSERT INTO region (name) VALUES (London);
+-- TODO add more defaults
